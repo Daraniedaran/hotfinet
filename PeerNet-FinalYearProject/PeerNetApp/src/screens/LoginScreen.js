@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert
+  Alert,
+  ActivityIndicator
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loginUser } from '../services/AuthService';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (email) => {
     const regex = /\S+@\S+\.\S+/;
@@ -21,8 +22,6 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const handleLogin = async () => {
-
-
     if (!email || !password) {
       Alert.alert("Error", "Please fill all fields");
       return;
@@ -33,14 +32,19 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    if (password.length < 6) {
-      Alert.alert("Error", "Password must be at least 6 characters");
-      return;
+    setLoading(true);
+    try {
+      const user = await loginUser(email, password);
+      // userLoggedIn is still useful for simple session checks, but Firebase Auth handles state too.
+      // We'll keep it for now to avoid breaking other parts of the app that rely on it.
+      await AsyncStorage.setItem('userLoggedIn', 'true');
+      await AsyncStorage.setItem('userId', user.uid);
+      navigation.replace('Home');
+    } catch (error) {
+      Alert.alert("Login Failed", error.message);
+    } finally {
+      setLoading(false);
     }
-
-    await AsyncStorage.setItem('userLoggedIn', 'true');
-    navigation.replace('Home');
-
   };
 
   return (
@@ -53,6 +57,7 @@ const LoginScreen = ({ navigation }) => {
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
+        autoCapitalize="none"
       />
 
       <TextInput
@@ -63,8 +68,12 @@ const LoginScreen = ({ navigation }) => {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerLink}>
+        <Text style={styles.linkText}>Don't have an account? Register</Text>
       </TouchableOpacity>
 
     </View>
@@ -78,6 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 28,
@@ -102,4 +112,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
+  registerLink: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  linkText: {
+    color: '#2E86DE',
+    fontSize: 16,
+  }
 });

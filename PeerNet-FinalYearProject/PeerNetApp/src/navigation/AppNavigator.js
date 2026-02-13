@@ -4,10 +4,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
 import NearbyProvidersScreen from '../screens/NearbyProvidersScreen';
 import RequestInternetScreen from '../screens/RequestInternetScreen';
 import WalletScreen from '../screens/WalletScreen';
+import ProviderRequestsScreen from '../screens/ProviderRequestsScreen';
 
 import { WalletProvider } from '../context/WalletContext';
 
@@ -17,7 +19,7 @@ const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
   return (
     <WalletProvider>
-       <NavigationContainer>
+      <NavigationContainer>
         <Stack.Navigator initialRouteName="Splash">
           <Stack.Screen
             name="Splash"
@@ -27,6 +29,11 @@ const AppNavigator = () => {
           <Stack.Screen
             name="Login"
             component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -46,6 +53,11 @@ const AppNavigator = () => {
           <Stack.Screen
             name="Wallet"
             component={WalletScreen}
+          />
+          <Stack.Screen
+            name="ProviderRequests"
+            component={ProviderRequestsScreen}
+            options={{ title: 'Incoming Requests' }}
           />
         </Stack.Navigator>
       </NavigationContainer>
