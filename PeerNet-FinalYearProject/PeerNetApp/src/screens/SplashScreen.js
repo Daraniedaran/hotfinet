@@ -1,17 +1,30 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SplashScreen = ({ navigation }) => {
+
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('Login');
-    }, 2000);
+
+    const checkLogin = async () => {
+      const isLoggedIn = await AsyncStorage.getItem('userLoggedIn');
+
+      setTimeout(() => {
+        if (isLoggedIn === 'true') {
+          navigation.replace('Home');
+        } else {
+          navigation.replace('Login');
+        }
+      }, 2000);
+    };
+
+    checkLogin();
+
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>PeerNet</Text>
-      <Text>Connecting People 🔗</Text>
+      <Text style={styles.text}>PeerNet</Text>
     </View>
   );
 };
@@ -23,11 +36,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0A74DA',
   },
-  title: {
-    fontSize: 32,
+  text: {
+    fontSize: 30,
     fontWeight: 'bold',
-    color: '#fff',
   },
 });

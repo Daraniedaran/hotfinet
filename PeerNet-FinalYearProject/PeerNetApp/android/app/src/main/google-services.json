@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "359450966200",
+    "project_id": "peernet-5de66",
+    "storage_bucket": "peernet-5de66.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359450966200:android:10507675e1c00d05961c4d",
+        "android_client_info": {
+          "package_name": "com.peernetapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9FJswc5XFnsEspYOOBsw2-1OnhFGNG9E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

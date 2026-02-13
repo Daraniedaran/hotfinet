@@ -1,36 +1,41 @@
 import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { WalletContext } from '../context/WalletContext';
 
 const WalletScreen = () => {
-  const { coins, addCoins } = useContext(WalletContext);
+  const { coins } = useContext(WalletContext);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>💰 My Wallet</Text>
-      <Text style={styles.coins}>Coins: {coins}</Text>
-
-      <Button title="Add 10 Coins" onPress={() => addCoins(10)} />
+      <Text style={styles.balance}>{coins} Coins</Text>
+      <Text style={styles.note}>10 Coins = ₹1</Text>
     </View>
   );
 };
 
 export default WalletScreen;
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  coins: {
-    fontSize: 22,
-    marginBottom: 20,
+  balance: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#1e90ff',
+  },
+  note: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#555',
   },
 });

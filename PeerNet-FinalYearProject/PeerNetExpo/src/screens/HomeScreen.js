@@ -1,17 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 const HomeScreen = ({ navigation }) => {
-    const handleLogout = async () => {
-    await AsyncStorage.removeItem('userLoggedIn');
-    navigation.replace('Login');
-  };
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🚀 HotFiNet</Text>
+      <Text style={styles.title}>🚀 PeerNet Home</Text>
 
       <TouchableOpacity
         style={styles.button}
