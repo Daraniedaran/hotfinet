@@ -71,7 +71,7 @@ const ProviderRequestsScreen = ({ navigation }) => {
 
     setAccepting(req.id);
     try {
-      await acceptRequest(req.id);
+      await acceptRequest(req.id, req.requesterId);
       navigation.navigate('QRDisplay', {
         requestId: req.id,
         requesterId: req.requesterId,

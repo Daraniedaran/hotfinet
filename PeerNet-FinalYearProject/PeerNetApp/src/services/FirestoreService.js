@@ -4,6 +4,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  setDoc,
   updateDoc,
   addDoc,
   onSnapshot,
@@ -15,6 +16,25 @@ import {
 } from '@react-native-firebase/firestore';
 
 const db = () => getFirestore();
+
+// ─── FCM Token ─────────────────────────────────────────────────────────────
+
+export const saveFCMToken = async (uid, token) => {
+  await setDoc(doc(db(), 'users', uid), { fcmToken: token }, { merge: true });
+};
+
+// ─── Internal notification helper ──────────────────────────────────────────
+// Writes a notification document to users/{uid}/notifications.
+// The target user's NotificationService listener will pick it up in real time.
+const pushNotification = (batch, uid, title, body) => {
+  const notifRef = doc(collection(db(), 'users', uid, 'notifications'));
+  batch.set(notifRef, {
+    title,
+    body,
+    read: false,
+    createdAt: serverTimestamp(),
+  });
+};
 
 export const getUserProfile = async (uid) => {
   const snap = await getDoc(doc(db(), 'users', uid));
@@ -32,13 +52,13 @@ export const updateUserProfile = async (uid, data) => {
 };
 
 export const updateUserLocation = async (uid, latitude, longitude) => {
-  await updateDoc(doc(db(), 'users', uid), {
+  await setDoc(doc(db(), 'users', uid), {
     location: { latitude, longitude },
-  });
+  }, { merge: true });
 };
 
 export const toggleAvailability = async (uid, status) => {
-  await updateDoc(doc(db(), 'users', uid), { isAvailable: status });
+  await setDoc(doc(db(), 'users', uid), { isAvailable: status }, { merge: true });
 };
 
 export const getAvailableProviders = async (currentUid) => {
@@ -49,7 +69,7 @@ export const getAvailableProviders = async (currentUid) => {
     .filter(u => u.id !== currentUid);
 };
 
-export const createRequest = async (requesterId, providerId, mb, coinsOffered) => {
+export const createRequest = async (requesterId, providerId, mb, coinsOffered, requesterName = 'Someone') => {
   const batch = writeBatch(db());
 
   const requestRef = doc(collection(db(), 'requests'));
@@ -64,6 +84,14 @@ export const createRequest = async (requesterId, providerId, mb, coinsOffered) =
 
   const userRef = doc(db(), 'users', requesterId);
   batch.update(userRef, { coins: increment(-coinsOffered) });
+
+  // Notify the provider
+  pushNotification(
+    batch,
+    providerId,
+    '📶 New Internet Request',
+    `${requesterName} wants ${mb} MB for 🪙 ${coinsOffered} coins`,
+  );
 
   await batch.commit();
   return requestRef.id;
@@ -92,11 +120,25 @@ export const getRequesterActiveRequest = (requesterId, callback) => {
   });
 };
 
-export const acceptRequest = async (requestId) => {
-  await updateDoc(doc(db(), 'requests', requestId), {
+export const acceptRequest = async (requestId, requesterId) => {
+  const batch = writeBatch(db());
+
+  batch.update(doc(db(), 'requests', requestId), {
     status: 'accepted',
     acceptedAt: serverTimestamp(),
   });
+
+  // Notify the requester
+  if (requesterId) {
+    pushNotification(
+      batch,
+      requesterId,
+      '✅ Request Accepted!',
+      'Your provider accepted. Scan the QR code to connect to their hotspot.',
+    );
+  }
+
+  await batch.commit();
 };
 
 export const ignoreRequest = async (requestId, requesterId, coinsOffered) => {
@@ -109,6 +151,15 @@ export const ignoreRequest = async (requestId, requesterId, coinsOffered) => {
     description: '↩️ Request cancelled – refund',
     createdAt: serverTimestamp(),
   });
+
+  // Notify the requester
+  pushNotification(
+    batch,
+    requesterId,
+    '❌ Request Declined',
+    `Your request was declined. 🪙 ${coinsOffered} coins have been refunded to your wallet.`,
+  );
+
   await batch.commit();
 };
 
@@ -147,6 +198,22 @@ export const completeSession = async (requestId, requesterId, providerId, coinsT
     requestId,
     createdAt: serverTimestamp(),
   });
+
+  // Notify the requester that the session is done
+  pushNotification(
+    batch,
+    requesterId,
+    '🏁 Session Complete',
+    `You used ${mbUsed} MB of internet. Provider earned 🪙 ${coinsToTransfer} coins.`,
+  );
+
+  // Notify the provider of earnings
+  pushNotification(
+    batch,
+    providerId,
+    '💰 Coins Credited!',
+    `Session ended. You earned 🪙 ${coinsToTransfer} coins for sharing ${mbUsed} MB.`,
+  );
 
   await batch.commit();
 };

@@ -20,7 +20,14 @@ import {
   updateUserLocation,
   toggleAvailability,
   listenUserProfile,
+  saveFCMToken,
 } from '../services/FirestoreService';
+import {
+  requestNotificationPermission,
+  getFCMToken,
+  listenForegroundMessages,
+  listenInAppNotifications,
+} from '../services/NotificationService';
 import { COLORS } from '../theme/colors';
 
 const HomeScreen = ({ navigation }) => {
@@ -51,7 +58,32 @@ const HomeScreen = ({ navigation }) => {
       }
     })();
 
-    return unsub;
+    // ── Notifications setup ──────────────────────────────────────────────
+    let unsubFCM;
+    let unsubInApp;
+    (async () => {
+      try {
+        const granted = await requestNotificationPermission();
+        if (granted) {
+          const token = await getFCMToken();
+          if (token) await saveFCMToken(user.uid, token);
+        }
+      } catch (e) {
+        console.warn('[HomeScreen] Notification setup error:', e.message);
+      }
+
+      // Listen to foreground FCM messages (remote push when app is open)
+      unsubFCM = listenForegroundMessages();
+
+      // Listen to Firestore-backed in-app notifications
+      unsubInApp = listenInAppNotifications(user.uid);
+    })();
+
+    return () => {
+      unsub();
+      if (unsubFCM) unsubFCM();
+      if (unsubInApp) unsubInApp();
+    };
   }, []);
 
   // Pulse for available indicator

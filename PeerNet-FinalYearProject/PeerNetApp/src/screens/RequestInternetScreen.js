@@ -25,6 +25,7 @@ const RequestInternetScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(null);
   const [userCoins, setUserCoins] = useState(0);
+  const [userName, setUserName] = useState('Someone');
   const [uid, setUid] = useState(null);
 
   const coinsNeeded = calculateCoinsForMB(parseInt(mb) || 0);
@@ -34,7 +35,10 @@ const RequestInternetScreen = ({ navigation }) => {
     if (!user) return;
     setUid(user.uid);
 
-    const unsub = listenUserProfile(user.uid, (data) => setUserCoins(data?.coins || 0));
+    const unsub = listenUserProfile(user.uid, (data) => {
+      setUserCoins(data?.coins || 0);
+      if (data?.name) setUserName(data.name);
+    });
 
     getAvailableProviders(user.uid)
       .then(data => {
@@ -74,7 +78,7 @@ const RequestInternetScreen = ({ navigation }) => {
           onPress: async () => {
             setRequesting(provider.id);
             try {
-              await createRequest(uid, provider.id, mbVal, coinsNeeded);
+              await createRequest(uid, provider.id, mbVal, coinsNeeded, userName);
               Alert.alert(
                 '✅ Request Sent!',
                 `Waiting for ${provider.name || 'provider'} to accept...`,
