@@ -1,8 +1,8 @@
 import React from 'react';
 import AppNavigator from './src/navigation/AppNavigator';
-import { WalletProvider } from './src/context/WalletContext';
+import WalletProvider from './src/context/WalletContext';
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <WalletProvider>
       <AppNavigator />

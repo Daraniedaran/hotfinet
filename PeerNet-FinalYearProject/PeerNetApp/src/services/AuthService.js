@@ -1,51 +1,64 @@
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+} from '@react-native-firebase/auth';
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  addDoc,
+  serverTimestamp,
+} from '@react-native-firebase/firestore';
 
-export const registerUser = async (email, password, role) => {
-  try {
-    const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
+const WELCOME_COINS = 500;
 
-    // Create user document in Firestore
-    await firestore().collection('users').doc(user.uid).set({
-      email: user.email,
-      role: role, // 'Provider' or 'Requester'
-      createdAt: firestore.FieldValue.serverTimestamp(),
-      coins: 1000, // Initial bonus
-    });
+export const registerUser = async (name, email, password) => {
+  const auth = getAuth();
+  const db = getFirestore();
 
-    return user;
-  } catch (error) {
-    throw error;
-  }
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const uid = userCredential.user.uid;
+
+  await setDoc(doc(db, 'users', uid), {
+    name: name.trim(),
+    email,
+    coins: WELCOME_COINS,
+    isAvailable: false,
+    location: null,
+    hotspotSSID: '',
+    hotspotPassword: '',
+    totalMBShared: 0,
+    totalMBConsumed: 0,
+    totalSessionsAsProvider: 0,
+    totalSessionsAsRequester: 0,
+    fcmToken: null,
+    createdAt: serverTimestamp(),
+  });
+
+  await addDoc(collection(db, 'users', uid, 'transactions'), {
+    type: 'bonus',
+    coins: WELCOME_COINS,
+    description: '🎁 Welcome Bonus',
+    createdAt: serverTimestamp(),
+  });
+
+  return userCredential.user;
 };
 
 export const loginUser = async (email, password) => {
-  try {
-    const userCredential = await auth().signInWithEmailAndPassword(email, password);
-    return userCredential.user;
-  } catch (error) {
-    throw error;
-  }
+  const auth = getAuth();
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  return userCredential.user;
 };
 
 export const logoutUser = async () => {
-  try {
-    await auth().signOut();
-  } catch (error) {
-    throw error;
-  }
+  await signOut(getAuth());
 };
 
-export const getUserRole = async (uid) => {
-  try {
-    const userDoc = await firestore().collection('users').doc(uid).get();
-    if (userDoc.exists) {
-      return userDoc.data().role;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error fetching user role:', error);
-    return null;
-  }
+export const sendPasswordReset = async (email) => {
+  await sendPasswordResetEmail(getAuth(), email);
 };

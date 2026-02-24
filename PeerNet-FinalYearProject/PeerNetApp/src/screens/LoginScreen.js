@@ -6,118 +6,172 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { loginUser } from '../services/AuthService';
+import LinearGradient from 'react-native-linear-gradient';
+import { loginUser, sendPasswordReset } from '../services/AuthService';
+import { COLORS } from '../theme/colors';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const validateEmail = (email) => {
-    const regex = /\S+@\S+\.\S+/;
-    return regex.test(email);
-  };
+  const [resetting, setResetting] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please fill all fields");
+      Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-
-    if (!validateEmail(email)) {
-      Alert.alert("Error", "Invalid email format");
-      return;
-    }
-
     setLoading(true);
     try {
-      const user = await loginUser(email, password);
-      // userLoggedIn is still useful for simple session checks, but Firebase Auth handles state too.
-      // We'll keep it for now to avoid breaking other parts of the app that rely on it.
-      await AsyncStorage.setItem('userLoggedIn', 'true');
-      await AsyncStorage.setItem('userId', user.uid);
-      navigation.replace('Home');
-    } catch (error) {
-      Alert.alert("Login Failed", error.message);
+      await loginUser(email.trim(), password);
+    } catch (err) {
+      Alert.alert('Login Failed', err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert('Enter Email', 'Enter your email above, then tap Forgot Password.');
+      return;
+    }
+    setResetting(true);
+    try {
+      await sendPasswordReset(email.trim());
+      Alert.alert('Email Sent', 'Password reset link sent to your email.');
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    } finally {
+      setResetting(false);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+    <LinearGradient colors={['#0A0E21', '#141830', '#0A0E21']} style={styles.gradient}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          {/* Logo */}
+          <View style={styles.logoArea}>
+            <View style={styles.iconCircle}>
+              <Text style={styles.icon}>📡</Text>
+            </View>
+            <Text style={styles.title}>HotFiNet</Text>
+            <Text style={styles.subtitle}>Welcome back! Sign in to continue</Text>
+          </View>
 
-      <TextInput
-        placeholder="Enter Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+          {/* Card */}
+          <View style={styles.card}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="you@example.com"
+              placeholderTextColor={COLORS.textMuted}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
 
-      <TextInput
-        placeholder="Enter Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor={COLORS.textMuted}
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
-      </TouchableOpacity>
+            <TouchableOpacity onPress={handleForgotPassword} disabled={resetting} style={styles.forgotRow}>
+              <Text style={styles.forgotText}>
+                {resetting ? 'Sending...' : 'Forgot Password?'}
+              </Text>
+            </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerLink}>
-        <Text style={styles.linkText}>Don't have an account? Register</Text>
-      </TouchableOpacity>
+            {loading ? (
+              <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 20 }} />
+            ) : (
+              <TouchableOpacity onPress={handleLogin}>
+                <LinearGradient colors={['#1E90FF', '#0060CC']} style={styles.button}>
+                  <Text style={styles.buttonText}>SIGN IN</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            )}
+          </View>
 
-    </View>
+          <TouchableOpacity
+            style={styles.registerRow}
+            onPress={() => navigation.navigate('Register')}
+          >
+            <Text style={styles.registerText}>
+              Don't have an account?{' '}
+              <Text style={styles.registerLink}>Create Account</Text>
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  gradient: { flex: 1 },
+  container: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 80, paddingBottom: 40 },
+  logoArea: { alignItems: 'center', marginBottom: 40 },
+  iconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(30,144,255,0.2)',
+    borderWidth: 2,
+    borderColor: COLORS.primary,
     justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    textAlign: 'center'
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#2E86DE',
-    padding: 15,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  registerLink: {
-    marginTop: 20,
     alignItems: 'center',
+    marginBottom: 16,
   },
-  linkText: {
-    color: '#2E86DE',
-    fontSize: 16,
-  }
+  icon: { fontSize: 34 },
+  title: { fontSize: 36, fontWeight: '900', color: '#fff', letterSpacing: 1.5 },
+  subtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 6 },
+  card: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    padding: 24,
+    marginBottom: 24,
+  },
+  label: { color: COLORS.textSecondary, fontSize: 13, marginBottom: 6, marginTop: 12 },
+  input: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    color: '#fff',
+    fontSize: 15,
+  },
+  forgotRow: { alignItems: 'flex-end', marginTop: 8 },
+  forgotText: { color: COLORS.primaryLight, fontSize: 13 },
+  button: {
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: { color: '#fff', fontWeight: '800', fontSize: 16, letterSpacing: 1 },
+  registerRow: { alignItems: 'center' },
+  registerText: { color: COLORS.textSecondary, fontSize: 14 },
+  registerLink: { color: COLORS.primary, fontWeight: '700' },
 });

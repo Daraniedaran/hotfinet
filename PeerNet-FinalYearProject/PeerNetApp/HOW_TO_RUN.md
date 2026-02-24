@@ -1,29 +1,45 @@
-# CRITICAL: MISSING CONFIGURATION
+# PeerNet — How to Run
 
-You are missing the `google-services.json` file in:
-`c:\RN\PeerNet-FinalYearProject\PeerNetApp\android\app\`
+## ✅ Configuration Status
+All configuration files are in place:
+- `android/app/google-services.json` ✅
+- Firebase Auth, Firestore — connected ✅
+- New Architecture disabled (compatible with all native libs) ✅
 
-Without this file, the app **WILL CRASH** immediately.
+---
 
-## Step 1: Fix Configuration
-1. Go to your Firebase Console.
-2. Download `google-services.json`.
-3. Move it to `c:\RN\PeerNet-FinalYearProject\PeerNetApp\android\app\`.
+## 🚀 Run the App
 
-## Step 2: Run the App
-After fixing step 1, run these commands in `PeerNetApp/`:
+Open **two terminals** in `c:\RN\PeerNet-FinalYearProject\PeerNetApp`.
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Terminal 1 — Metro bundler
+```powershell
+npx react-native start
+```
 
-2. Start bundler:
-   ```bash
-   npx react-native start
-   ```
+### Terminal 2 — Build & launch on Android
+```powershell
+npx react-native run-android
+```
 
-3. Launch on Android:
-   ```bash
-   npx react-native run-android
-   ```
+---
+
+## 🔄 Clean Build (if you see Gradle errors)
+```powershell
+cd android
+.\gradlew clean
+cd ..
+npx react-native run-android
+```
+
+---
+
+## 📱 App Flow
+1. **Splash** → shows for 2 seconds on first launch
+2. **Login** → enter email + password
+3. **Register** → if no account yet
+4. **Home** → availability toggle, navigation to all features
+5. **Wallet** → view and add balance
+6. **Find Providers** → see available nearby providers
+7. **Request Internet** → send a request to a provider
+8. **Logout** → returns to Login screen
