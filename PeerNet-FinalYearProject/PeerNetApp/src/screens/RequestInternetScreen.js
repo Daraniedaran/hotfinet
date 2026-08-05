@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,10 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  ScrollView,
   ActivityIndicator,
+  Animated,
+  Easing,
+  Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { getAuth } from '@react-native-firebase/auth';
@@ -19,13 +21,54 @@ import {
 import { calculateCoinsForMB } from '../services/walletService';
 import { COLORS } from '../theme/colors';
 
+const { width } = Dimensions.get('window');
+const RADAR_CENTER = width / 2;
+
+const RadarAnimation = () => {
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 3000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  }, []);
+
+  const s1 = anim.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] });
+  const o1 = anim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.8, 0, 0] });
+
+  const s2 = anim.interpolate({ inputRange: [0, 1], outputRange: [0, 0.8] });
+  const o2 = anim.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 0.6, 0] });
+
+  const s3 = anim.interpolate({ inputRange: [0, 1], outputRange: [0, 0.5] });
+  const o3 = anim.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 0, 0.8, 0] });
+
+  return (
+    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+      <View style={styles.radarCenter}>
+        <Animated.View style={[styles.radarRing, { transform: [{ scale: s1 }], opacity: o1 }]} />
+        <Animated.View style={[styles.radarRing, { transform: [{ scale: s2 }], opacity: o2 }]} />
+        <Animated.View style={[styles.radarRing, { transform: [{ scale: s3 }], opacity: o3 }]} />
+
+        {/* Static Rings */}
+        <View style={[styles.staticRing, { width: width * 0.4, height: width * 0.4 }]} />
+        <View style={[styles.staticRing, { width: width * 0.7, height: width * 0.7 }]} />
+      </View>
+    </View>
+  );
+};
+
 const RequestInternetScreen = ({ navigation }) => {
   const [mb, setMb] = useState('200');
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(null);
   const [userCoins, setUserCoins] = useState(0);
-  const [userName, setUserName] = useState('Someone');
+  const [userName, setUserName] = useState('Me');
   const [uid, setUid] = useState(null);
 
   const coinsNeeded = calculateCoinsForMB(parseInt(mb) || 0);
@@ -70,7 +113,7 @@ const RequestInternetScreen = ({ navigation }) => {
 
     Alert.alert(
       '📡 Send Request',
-      `Request ${mbVal} MB from ${provider.name || provider.email}?\n\n${coinsNeeded} coins will be held until session ends.`,
+      `Request ${mbVal} MB from ${provider.name || provider.email}?\n\nCoins will be transferred automatically at the end of the session based on the actual MB used.`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -78,12 +121,14 @@ const RequestInternetScreen = ({ navigation }) => {
           onPress: async () => {
             setRequesting(provider.id);
             try {
-              await createRequest(uid, provider.id, mbVal, coinsNeeded, userName);
-              Alert.alert(
-                '✅ Request Sent!',
-                `Waiting for ${provider.name || 'provider'} to accept...`,
-                [{ text: 'OK', onPress: () => navigation.goBack() }]
-              );
+              const newRequestId = await createRequest(uid, provider.id, mbVal, coinsNeeded, userName);
+              navigation.replace('WaitingForAccept', {
+                requestId: newRequestId,
+                providerId: provider.id,
+                providerName: provider.name || provider.email || 'Provider',
+                mb: mbVal,
+                coinsOffered: coinsNeeded,
+              });
             } catch (e) {
               Alert.alert('Error', e.message);
             } finally {
@@ -95,115 +140,117 @@ const RequestInternetScreen = ({ navigation }) => {
     );
   };
 
+  // Calculate radar positions for providers
+  const getProviderPosition = (index, total) => {
+    const angle = (index / total) * Math.PI * 2 - Math.PI / 2; // Start from top
+    const radius = total === 1 ? width * 0.25 : width * 0.25 + (index % 2) * 30; // Stagger radius slightly if many
+
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+
+    return {
+      transform: [{ translateX: x }, { translateY: y }]
+    };
+  };
+
   return (
-    <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-            <Text style={styles.backBtnText}>← Back</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Request Internet</Text>
-          <View style={{ width: 60 }} />
-        </View>
+    <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
 
-        {/* MB Input Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>📶 How much data do you need?</Text>
-          <Text style={styles.cardSub}>Enter data amount in MB</Text>
+      {/* Header */}
+      <View style={styles.headerRow}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={styles.backBtnText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Select to Connect</Text>
+        <View style={{ width: 40 }} />
+      </View>
 
-          <View style={styles.mbInputRow}>
-            <TextInput
-              style={styles.mbInput}
-              value={mb}
-              onChangeText={setMb}
-              keyboardType="numeric"
-              placeholder="200"
-              placeholderTextColor={COLORS.textMuted}
-            />
-            <Text style={styles.mbUnit}>MB</Text>
-          </View>
+      <Text style={styles.radarSubTitle}>Searching for nearby devices...</Text>
 
-          {/* Quick presets */}
-          <View style={styles.presets}>
-            {['100', '200', '500', '1000'].map(val => (
-              <TouchableOpacity
-                key={val}
-                style={[styles.presetChip, mb === val && styles.presetChipActive]}
-                onPress={() => setMb(val)}
-              >
-                <Text style={[styles.presetText, mb === val && styles.presetTextActive]}>
-                  {val} MB
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+      {/* Radar Area */}
+      <View style={styles.radarContainer}>
+        <RadarAnimation />
 
-          {/* Cost calculation */}
-          <LinearGradient colors={['rgba(30,144,255,0.15)', 'rgba(139,92,246,0.15)']} style={styles.costCard}>
-            <View style={styles.costRow}>
-              <Text style={styles.costLabel}>Coins Required</Text>
-              <Text style={styles.costCoins}>🪙 {coinsNeeded}</Text>
-            </View>
-            <View style={styles.costRow}>
-              <Text style={styles.costLabel}>Your Balance</Text>
-              <Text style={[styles.costCoins, { color: userCoins >= coinsNeeded ? COLORS.success : COLORS.error }]}>
-                🪙 {userCoins}
-              </Text>
-            </View>
-            {userCoins < coinsNeeded && (
-              <Text style={styles.insufficientText}>
-                ⚠️ Need {coinsNeeded - userCoins} more coins.{' '}
-                <Text style={styles.buyLink} onPress={() => navigation.navigate('BuyCoins')}>Buy Coins →</Text>
-              </Text>
-            )}
-          </LinearGradient>
-        </View>
-
-        {/* Providers List */}
-        <Text style={styles.sectionTitle}>
-          {loading ? 'Finding providers...' : `${providers.length} Available Provider${providers.length !== 1 ? 's' : ''} Nearby`}
-        </Text>
-
-        {loading && <ActivityIndicator color={COLORS.primary} style={{ marginVertical: 20 }} />}
-
-        {!loading && providers.length === 0 && (
-          <View style={styles.emptyCard}>
-            <Text style={styles.emptyIcon}>📡</Text>
-            <Text style={styles.emptyTitle}>No providers nearby</Text>
-            <Text style={styles.emptyText}>Ask someone to turn on "Share Hotspot" in HotFiNet</Text>
-          </View>
-        )}
-
-        {providers.map(provider => (
-          <View key={provider.id} style={styles.provCard}>
-            <View style={styles.provAvatar}>
-              <Text style={styles.provAvatarText}>
-                {(provider.name || provider.email || 'U').charAt(0).toUpperCase()}
-              </Text>
-            </View>
-            <View style={styles.provInfo}>
-              <Text style={styles.provName}>{provider.name || 'Provider'}</Text>
-              <Text style={styles.provEmail} numberOfLines={1}>{provider.email}</Text>
-              <View style={styles.provReward}>
-                <Text style={styles.provRewardText}>Pays 🪙 {coinsNeeded} on completion</Text>
-              </View>
-            </View>
+        {/* Providers */}
+        {providers.map((provider, i) => (
+          <View key={provider.id} style={[styles.avatarWrapper, getProviderPosition(i, providers.length)]}>
             <TouchableOpacity
               onPress={() => handleRequest(provider)}
+              style={styles.providerAvatar}
               disabled={requesting === provider.id}
-              style={styles.reqBtn}
             >
-              <LinearGradient colors={['#1E90FF', '#0060CC']} style={styles.reqBtnGrad}>
-                {requesting === provider.id
-                  ? <ActivityIndicator size="small" color="#fff" />
-                  : <Text style={styles.reqBtnText}>Request</Text>
-                }
-              </LinearGradient>
+              {requesting === provider.id ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.providerInitial}>
+                  {(provider.name || provider.email || 'U').charAt(0).toUpperCase()}
+                </Text>
+              )}
             </TouchableOpacity>
+            <Text style={styles.providerName} numberOfLines={1}>
+              {provider.name || provider.email?.split('@')[0] || 'Provider'}
+            </Text>
           </View>
         ))}
-      </ScrollView>
+
+        {/* Central User (Me) */}
+        <View style={styles.centerAvatar}>
+          <LinearGradient colors={['#26A69A', '#00796B']} style={styles.centerAvatarGrad}>
+            <Text style={styles.centerInitial}>{(userName || 'M').charAt(0).toUpperCase()}</Text>
+          </LinearGradient>
+          <Text style={styles.centerName}>Me</Text>
+        </View>
+      </View>
+
+      {/* Floating QR Button */}
+      <TouchableOpacity
+        style={styles.qrFab}
+        onPress={() => navigation.navigate('QRScanner')}
+      >
+        <Text style={styles.qrFabText}>Manual QR Scan</Text>
+      </TouchableOpacity>
+
+      {/* Bottom Sheet Request Form */}
+      <View style={styles.bottomCard}>
+        <View style={styles.dragger} />
+
+        <Text style={styles.cardTitle}>Data Requirements</Text>
+
+        <View style={styles.mbInputWrapper}>
+          <TextInput
+            style={styles.mbInput}
+            value={mb}
+            onChangeText={setMb}
+            keyboardType="numeric"
+            placeholder="200"
+            placeholderTextColor="rgba(0,0,0,0.3)"
+          />
+          <Text style={styles.mbUnit}>MB</Text>
+        </View>
+
+        <View style={styles.presetsRow}>
+          {['50', '200', '500', '1000'].map(val => (
+            <TouchableOpacity
+              key={val}
+              style={[styles.presetBtn, mb === val && styles.presetBtnActive]}
+              onPress={() => setMb(val)}
+            >
+              <Text style={[styles.presetText, mb === val && styles.presetTextActive]}>{val} MB</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Cost Preview */}
+        <View style={styles.costPreview}>
+          <Text style={styles.costText}>Estimated Cost: <Text style={{ fontWeight: '900', color: COLORS.primary }}>🪙 {coinsNeeded}</Text></Text>
+          {userCoins < coinsNeeded && (
+            <Text style={{ color: COLORS.error, fontSize: 12, marginTop: 4, textAlign: 'center' }}>
+              ⚠️ Not enough coins. <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('BuyCoins')}>Get more</Text>
+            </Text>
+          )}
+        </View>
+      </View>
+
     </LinearGradient>
   );
 };
@@ -212,42 +259,46 @@ export default RequestInternetScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scroll: { paddingHorizontal: 20, paddingTop: 52, paddingBottom: 40 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
-  backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
-  backBtnText: { color: COLORS.primary, fontWeight: '700' },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 52, paddingHorizontal: 20 },
+  backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 20 },
+  backBtnText: { color: '#fff', fontSize: 20, fontWeight: '800' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
-  card: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', padding: 18, marginBottom: 20 },
-  cardTitle: { color: '#fff', fontWeight: '800', fontSize: 16, marginBottom: 4 },
-  cardSub: { color: COLORS.textSecondary, fontSize: 13, marginBottom: 16 },
-  mbInputRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  mbInput: { flex: 1, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(30,144,255,0.4)', paddingHorizontal: 16, paddingVertical: 14, color: '#fff', fontSize: 28, fontWeight: '800' },
-  mbUnit: { color: COLORS.textSecondary, fontSize: 18, fontWeight: '700' },
-  presets: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  presetChip: { borderRadius: 10, paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
-  presetChipActive: { backgroundColor: 'rgba(30,144,255,0.2)', borderColor: COLORS.primary },
-  presetText: { color: COLORS.textSecondary, fontSize: 13 },
-  presetTextActive: { color: COLORS.primary, fontWeight: '700' },
-  costCard: { borderRadius: 12, padding: 14, gap: 8 },
-  costRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  costLabel: { color: COLORS.textSecondary, fontSize: 14 },
-  costCoins: { color: COLORS.gold, fontWeight: '800', fontSize: 16 },
-  insufficientText: { color: COLORS.warning, fontSize: 12, marginTop: 4 },
-  buyLink: { color: COLORS.primary, fontWeight: '700' },
-  sectionTitle: { color: COLORS.textSecondary, fontSize: 13, fontWeight: '700', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.8 },
-  emptyCard: { alignItems: 'center', padding: 30, backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 16, gap: 8 },
-  emptyIcon: { fontSize: 40 },
-  emptyTitle: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  emptyText: { color: COLORS.textSecondary, fontSize: 13, textAlign: 'center' },
-  provCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', gap: 12 },
-  provAvatar: { width: 46, height: 46, borderRadius: 23, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
-  provAvatarText: { color: '#fff', fontWeight: '800', fontSize: 20 },
-  provInfo: { flex: 1 },
-  provName: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  provEmail: { color: COLORS.textMuted, fontSize: 12 },
-  provReward: { marginTop: 4 },
-  provRewardText: { color: COLORS.gold, fontSize: 12, fontWeight: '600' },
-  reqBtn: { borderRadius: 10, overflow: 'hidden' },
-  reqBtnGrad: { paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center', minWidth: 80 },
-  reqBtnText: { color: '#fff', fontWeight: '800', fontSize: 13 },
+  radarSubTitle: { color: 'rgba(255,255,255,0.8)', textAlign: 'center', marginTop: 10, fontSize: 14, },
+
+  // Radar UI
+  radarContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', position: 'relative' },
+  radarCenter: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center' },
+  radarRing: { position: 'absolute', width: width * 0.9, height: width * 0.9, borderRadius: width, backgroundColor: 'rgba(255,255,255,0.1)' },
+  staticRing: { position: 'absolute', borderRadius: width, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
+
+  avatarWrapper: { position: 'absolute', width: 60, height: 80, justifyContent: 'center', alignItems: 'center' },
+  providerAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 8 },
+  providerInitial: { color: COLORS.primary, fontSize: 22, fontWeight: '800' },
+  providerName: { color: '#fff', fontSize: 11, fontWeight: '600', marginTop: 4, textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3, width: 80, textAlign: 'center' },
+
+  centerAvatar: { width: 80, height: 100, justifyContent: 'center', alignItems: 'center' },
+  centerAvatarGrad: { width: 64, height: 64, borderRadius: 32, justifyContent: 'center', alignItems: 'center', borderWidth: 3, borderColor: 'rgba(255,255,255,0.5)' },
+  centerInitial: { color: '#fff', fontSize: 28, fontWeight: '900' },
+  centerName: { color: '#fff', fontSize: 13, fontWeight: '800', marginTop: 8 },
+
+  // Bottom Sheet UI
+  bottomCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderTopLeftRadius: 30, borderTopRightRadius: 30, padding: 24, paddingBottom: 40, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
+  dragger: { width: 40, height: 5, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 3, alignSelf: 'center', marginBottom: 20 },
+  cardTitle: { color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 16, textAlign: 'center' },
+
+  mbInputWrapper: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 16, paddingHorizontal: 20, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(30,144,255,0.3)' },
+  mbInput: { flex: 1, fontSize: 32, fontWeight: '900', color: '#fff', paddingVertical: 14, textAlign: 'center' },
+  mbUnit: { fontSize: 18, fontWeight: '800', color: COLORS.textMuted },
+
+  presetsRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 8, marginBottom: 20 },
+  presetBtn: { flex: 1, paddingVertical: 10, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.06)', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  presetBtnActive: { backgroundColor: 'rgba(30,144,255,0.2)', borderColor: COLORS.primary },
+  presetText: { color: COLORS.textMuted, fontWeight: '600', fontSize: 13 },
+  presetTextActive: { color: COLORS.primary, fontWeight: '800' },
+
+  costPreview: { alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.04)', paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
+  costText: { color: COLORS.textMuted, fontSize: 14, fontWeight: '600' },
+
+  qrFab: { position: 'absolute', bottom: 330, alignSelf: 'center', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)', zIndex: 10 },
+  qrFabText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });

@@ -64,14 +64,14 @@ const ProfileScreen = ({ navigation }) => {
 
     if (loading) {
         return (
-            <LinearGradient colors={['#0A0E21', '#141830']} style={styles.center}>
+            <LinearGradient colors={['#0B1120', '#0B1120']} style={styles.center}>
                 <ActivityIndicator size="large" color={COLORS.primary} />
             </LinearGradient>
         );
     }
 
     return (
-        <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
+        <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
                 {/* Header */}
                 <View style={styles.headerRow}>
@@ -84,7 +84,7 @@ const ProfileScreen = ({ navigation }) => {
 
                 {/* Avatar */}
                 <View style={styles.avatarArea}>
-                    <LinearGradient colors={['#1E90FF', '#8B5CF6']} style={styles.avatarCircle}>
+                    <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.avatarCircle}>
                         <Text style={styles.avatarText}>{(name || 'U').charAt(0).toUpperCase()}</Text>
                     </LinearGradient>
                     <Text style={styles.emailText}>{profile?.email}</Text>
@@ -173,8 +173,8 @@ const ProfileScreen = ({ navigation }) => {
                     )}
                 </View>
 
-                <TouchableOpacity onPress={handleSave} disabled={saving}>
-                    <LinearGradient colors={['#1E90FF', '#0060CC']} style={styles.saveBtn}>
+                <TouchableOpacity onPress={handleSave} disabled={saving} style={styles.saveBtnWrapper}>
+                    <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.saveBtn}>
                         {saving
                             ? <ActivityIndicator size="small" color="#fff" />
                             : <Text style={styles.saveBtnText}>💾 Save Profile</Text>
@@ -194,12 +194,12 @@ const styles = StyleSheet.create({
     scroll: { paddingHorizontal: 20, paddingTop: 52, paddingBottom: 40 },
     headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
     backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
-    backBtnText: { color: COLORS.primary, fontWeight: '700' },
+    backBtnText: { color: COLORS.primary, fontWeight: '800' },
     headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
     avatarArea: { alignItems: 'center', marginBottom: 24 },
     avatarCircle: { width: 80, height: 80, borderRadius: 40, justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
     avatarText: { fontSize: 36, color: '#fff', fontWeight: '900' },
-    emailText: { color: COLORS.textSecondary, fontSize: 14 },
+    emailText: { color: COLORS.textSecondary, fontSize: 14, },
     statsRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
     statBox: { flex: 1, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
     statNum: { color: '#fff', fontWeight: '800', fontSize: 18 },
@@ -208,13 +208,14 @@ const styles = StyleSheet.create({
     cardTitle: { color: '#fff', fontWeight: '800', fontSize: 16, marginBottom: 4 },
     cardSubtitle: { color: COLORS.textSecondary, fontSize: 12, marginBottom: 12, lineHeight: 18 },
     label: { color: COLORS.textSecondary, fontSize: 13, marginBottom: 6, marginTop: 12 },
-    input: { backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 14, paddingVertical: 12, color: '#fff', fontSize: 15 },
+    input: { backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 14, paddingVertical: 12, color: '#fff', fontSize: 15, },
     qrWrapper: { alignItems: 'center', marginTop: 20 },
     qrLabel: { color: COLORS.textSecondary, fontSize: 13, marginBottom: 14 },
     qrBox: { backgroundColor: 'white', padding: 16, borderRadius: 12 },
     qrHint: { color: COLORS.textMuted, fontSize: 11, marginTop: 10, textAlign: 'center' },
     qrPlaceholder: { marginTop: 14, padding: 16, backgroundColor: 'rgba(30,144,255,0.08)', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(30,144,255,0.2)' },
     qrPlaceholderText: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 20 },
-    saveBtn: { borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 4 },
+    saveBtnWrapper: { borderRadius: 14, marginTop: 4, overflow: 'hidden', elevation: 4, shadowColor: '#42A5F5', shadowOpacity: 0.4, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
+    saveBtn: { paddingVertical: 16, alignItems: 'center' },
     saveBtnText: { color: '#fff', fontWeight: '800', fontSize: 16 },
 });

@@ -1,5 +1,5 @@
 import { PermissionsAndroid, Platform } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
+import Geolocation from '@react-native-community/geolocation';
 
 export const requestLocationPermission = async () => {
   if (Platform.OS === 'android') {
@@ -18,10 +18,18 @@ export const requestLocationPermission = async () => {
 
 export const getCurrentLocation = () => {
   return new Promise((resolve, reject) => {
+    // Step 1: Try fast network-based location (works indoors, no GPS needed)
     Geolocation.getCurrentPosition(
       pos => resolve(pos.coords),
-      err => reject(err),
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      () => {
+        // Step 2: Fallback to GPS if network location fails
+        Geolocation.getCurrentPosition(
+          pos => resolve(pos.coords),
+          err => reject(err),
+          { enableHighAccuracy: true, timeout: 30000, maximumAge: 60000 }
+        );
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
     );
   });
 };

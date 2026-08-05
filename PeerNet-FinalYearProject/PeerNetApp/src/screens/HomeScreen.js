@@ -8,6 +8,7 @@ import {
   ScrollView,
   Animated,
   Alert,
+  InteractionManager,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { getAuth } from '@react-native-firebase/auth';
@@ -47,8 +48,8 @@ const HomeScreen = ({ navigation }) => {
       setIsAvailable(data.isAvailable || false);
     });
 
-    // Location update
-    (async () => {
+    // Delay permission requests to guarantee React Native fully attaches to the Android Activity
+    let locationTimeout = setTimeout(async () => {
       try {
         await requestLocationPermission();
         const coords = await getCurrentLocation();
@@ -56,12 +57,12 @@ const HomeScreen = ({ navigation }) => {
       } catch (e) {
         console.warn('Location error:', e.message);
       }
-    })();
+    }, 3000);
 
     // ── Notifications setup ──────────────────────────────────────────────
     let unsubFCM;
     let unsubInApp;
-    (async () => {
+    let notificationTimeout = setTimeout(async () => {
       try {
         const granted = await requestNotificationPermission();
         if (granted) {
@@ -71,16 +72,18 @@ const HomeScreen = ({ navigation }) => {
       } catch (e) {
         console.warn('[HomeScreen] Notification setup error:', e.message);
       }
+    }, 1500);
 
-      // Listen to foreground FCM messages (remote push when app is open)
-      unsubFCM = listenForegroundMessages();
+    // Listen to foreground FCM messages (remote push when app is open)
+    unsubFCM = listenForegroundMessages();
 
-      // Listen to Firestore-backed in-app notifications
-      unsubInApp = listenInAppNotifications(user.uid);
-    })();
+    // Listen to Firestore-backed in-app notifications
+    unsubInApp = listenInAppNotifications(user.uid);
 
     return () => {
       unsub();
+      clearTimeout(locationTimeout);
+      clearTimeout(notificationTimeout);
       if (unsubFCM) unsubFCM();
       if (unsubInApp) unsubInApp();
     };
@@ -121,7 +124,7 @@ const HomeScreen = ({ navigation }) => {
   const name = profile?.name ?? 'User';
 
   return (
-    <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
+    <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Header */}
@@ -130,13 +133,15 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.greeting}>Hello, {name.split(' ')[0]} 👋</Text>
             <Text style={styles.subGreeting}>Share or request internet nearby</Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.avatarBtn}>
-            <Text style={styles.avatarText}>{name.charAt(0).toUpperCase()}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.avatarBtnWrapper}>
+            <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.avatarBtnGrad}>
+              <Text style={styles.avatarText}>{name.charAt(0).toUpperCase()}</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
         {/* Coin Balance Card */}
-        <LinearGradient colors={['#1E90FF', '#6D28D9']} style={styles.balanceCard}>
+        <LinearGradient colors={['#3A8DFF', '#8B5CF6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>Coin Balance</Text>
           <View style={styles.balanceRow}>
             <Text style={styles.coinIcon}>🪙</Text>
@@ -145,10 +150,12 @@ const HomeScreen = ({ navigation }) => {
           </View>
           <Text style={styles.inrEquiv}>≈ ₹{(coins * 0.1).toFixed(0)} value</Text>
           <TouchableOpacity
-            style={styles.buyBtn}
+            style={styles.buyBtnWrapper}
             onPress={() => navigation.navigate('BuyCoins')}
           >
-            <Text style={styles.buyBtnText}>+ Buy Coins</Text>
+            <LinearGradient colors={['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.1)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.buyBtnGrad}>
+              <Text style={styles.buyBtnText}>+ Buy Coins</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </LinearGradient>
 
@@ -182,7 +189,7 @@ const HomeScreen = ({ navigation }) => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('RequestInternet')}
           >
-            <LinearGradient colors={['#1E90FF', '#0060CC']} style={styles.actionGrad}>
+            <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.actionGrad}>
               <Text style={styles.actionIcon}>🌐</Text>
               <Text style={styles.actionTitle}>Request{'\n'}Internet</Text>
             </LinearGradient>
@@ -192,7 +199,7 @@ const HomeScreen = ({ navigation }) => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('ProviderRequests')}
           >
-            <LinearGradient colors={['#8B5CF6', '#6D28D9']} style={styles.actionGrad}>
+            <LinearGradient colors={['#AB47BC', '#7B1FA2']} style={styles.actionGrad}>
               <Text style={styles.actionIcon}>📥</Text>
               <Text style={styles.actionTitle}>Incoming{'\n'}Requests</Text>
             </LinearGradient>
@@ -202,7 +209,7 @@ const HomeScreen = ({ navigation }) => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('Wallet')}
           >
-            <LinearGradient colors={['#FFD700', '#FF8C00']} style={styles.actionGrad}>
+            <LinearGradient colors={['#FFCA28', '#F57C00']} style={styles.actionGrad}>
               <Text style={styles.actionIcon}>👛</Text>
               <Text style={styles.actionTitle}>My{'\n'}Wallet</Text>
             </LinearGradient>
@@ -212,7 +219,7 @@ const HomeScreen = ({ navigation }) => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('TransactionHistory')}
           >
-            <LinearGradient colors={['#14B8A6', '#0D9488']} style={styles.actionGrad}>
+            <LinearGradient colors={['#26A69A', '#00796B']} style={styles.actionGrad}>
               <Text style={styles.actionIcon}>📊</Text>
               <Text style={styles.actionTitle}>History</Text>
             </LinearGradient>
@@ -238,8 +245,10 @@ const HomeScreen = ({ navigation }) => {
         )}
 
         {/* Logout */}
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <Text style={styles.logoutText}>🚪 Logout</Text>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtnWrapper}>
+          <LinearGradient colors={['rgba(239,68,68,0.05)', 'rgba(220,38,38,0.2)']} style={styles.logoutBtnGrad}>
+            <Text style={styles.logoutText}>🚪 Logout</Text>
+          </LinearGradient>
         </TouchableOpacity>
 
       </ScrollView>
@@ -255,11 +264,19 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
   greeting: { fontSize: 22, fontWeight: '800', color: '#fff' },
   subGreeting: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
-  avatarBtn: {
+  avatarBtnWrapper: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.primary,
+    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#8E2DE2',
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  avatarBtnGrad: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -271,18 +288,22 @@ const styles = StyleSheet.create({
   },
   balanceLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 8 },
   balanceRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, marginBottom: 4 },
-  coinIcon: { fontSize: 28 },
+  coinIcon: { fontSize: 28, },
   balanceAmount: { fontSize: 48, fontWeight: '900', color: '#fff', lineHeight: 56 },
   balanceUnit: { fontSize: 18, color: 'rgba(255,255,255,0.7)', marginBottom: 8 },
   inrEquiv: { color: 'rgba(255,255,255,0.6)', fontSize: 13, marginBottom: 14 },
-  buyBtn: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  buyBtnWrapper: {
+    alignSelf: 'flex-start',
     borderRadius: 10,
+    overflow: 'hidden',
+  },
+  buyBtnGrad: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    alignSelf: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  buyBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  buyBtnText: { color: '#fff', fontWeight: '800', fontSize: 13, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
   availCard: {
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 16,
@@ -296,13 +317,13 @@ const styles = StyleSheet.create({
   },
   availLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   availDot: { width: 12, height: 12, borderRadius: 6 },
-  availTitle: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  availTitle: { color: '#fff', fontWeight: '800', fontSize: 15 },
   availSub: { color: COLORS.textSecondary, fontSize: 12, marginTop: 2 },
   sectionTitle: { color: COLORS.textSecondary, fontSize: 13, fontWeight: '600', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 20 },
   actionCard: { width: '47%', borderRadius: 16, overflow: 'hidden' },
   actionGrad: { padding: 20, minHeight: 110, justifyContent: 'space-between' },
-  actionIcon: { fontSize: 28 },
+  actionIcon: { fontSize: 28, },
   actionTitle: { color: '#fff', fontWeight: '800', fontSize: 15 },
   statsRow: {
     flexDirection: 'row',
@@ -318,15 +339,18 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
   },
-  statCardMid: { borderColor: 'rgba(30,144,255,0.3)' },
+  statCardMid: { borderColor: 'rgba(255,255,255,0.08)' },
   statVal: { color: '#fff', fontSize: 16, fontWeight: '800' },
   statLabel: { color: COLORS.textSecondary, fontSize: 10, marginTop: 4, textAlign: 'center' },
-  logoutBtn: {
-    alignItems: 'center',
-    paddingVertical: 14,
+  logoutBtnWrapper: {
     borderRadius: 12,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(239,68,68,0.4)',
   },
-  logoutText: { color: COLORS.error, fontWeight: '700', fontSize: 15 },
+  logoutBtnGrad: {
+    alignItems: 'center',
+    paddingVertical: 14,
+  },
+  logoutText: { color: '#ff6b6b', fontWeight: '800', fontSize: 15 },
 });

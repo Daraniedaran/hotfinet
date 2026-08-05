@@ -47,7 +47,7 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient colors={['#0A0E21', '#141830', '#0A0E21']} style={styles.gradient}>
+    <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.gradient}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -115,8 +115,8 @@ const RegisterScreen = ({ navigation }) => {
             {loading ? (
               <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 20 }} />
             ) : (
-              <TouchableOpacity onPress={handleRegister}>
-                <LinearGradient colors={['#1E90FF', '#0060CC']} style={styles.button}>
+              <TouchableOpacity onPress={handleRegister} style={styles.buttonWrapper}>
+                <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.button}>
                   <Text style={styles.buttonText}>CREATE ACCOUNT</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  icon: { fontSize: 32 },
+  icon: { fontSize: 32, },
   title: { fontSize: 34, fontWeight: '900', color: '#fff', letterSpacing: 1.5 },
   subtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 4 },
   bonusBanner: {
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     gap: 10,
   },
-  bonusIcon: { fontSize: 24 },
+  bonusIcon: { fontSize: 24, },
   bonusText: { color: COLORS.goldLight, fontSize: 14, flex: 1 },
   bonusBold: { fontWeight: '800', color: COLORS.gold },
   card: {
@@ -191,14 +191,22 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 15,
   },
-  button: {
+  buttonWrapper: {
     borderRadius: 14,
+    marginTop: 20,
+    overflow: 'hidden',
+    elevation: 4,
+    shadowColor: '#42A5F5',
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+  },
+  button: {
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 20,
   },
   buttonText: { color: '#fff', fontWeight: '800', fontSize: 16, letterSpacing: 1 },
   loginRow: { alignItems: 'center' },
-  loginText: { color: COLORS.textSecondary, fontSize: 14 },
-  loginLink: { color: COLORS.primary, fontWeight: '700' },
+  loginText: { color: COLORS.textSecondary, fontSize: 14, },
+  loginLink: { color: COLORS.primary, fontWeight: '800' },
 });

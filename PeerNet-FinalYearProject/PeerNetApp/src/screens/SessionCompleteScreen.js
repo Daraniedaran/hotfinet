@@ -29,11 +29,11 @@ const SessionCompleteScreen = ({ navigation, route }) => {
     };
 
     return (
-        <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
+        <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
             <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
                 {/* Success icon */}
                 <Animated.View style={[styles.successCircle, { transform: [{ scale: scaleAnim }] }]}>
-                    <LinearGradient colors={['#10B981', '#059669']} style={styles.successGrad}>
+                    <LinearGradient colors={['#26A69A', '#00796B']} style={styles.successGrad}>
                         <Text style={styles.checkIcon}>✓</Text>
                     </LinearGradient>
                 </Animated.View>
@@ -64,8 +64,8 @@ const SessionCompleteScreen = ({ navigation, route }) => {
                 </LinearGradient>
 
                 {/* Actions */}
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-                    <LinearGradient colors={['#1E90FF', '#0060CC']} style={styles.homeBtn}>
+                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.homeBtnWrapper}>
+                    <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.homeBtn}>
                         <Text style={styles.homeBtnText}>🏠 Back to Home</Text>
                     </LinearGradient>
                 </TouchableOpacity>
@@ -93,13 +93,14 @@ const styles = StyleSheet.create({
     subtitle: { fontSize: 14, color: COLORS.textSecondary, marginBottom: 28, textAlign: 'center' },
     summaryCard: { width: '100%', borderRadius: 18, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
     summRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-    summLabel: { color: COLORS.textSecondary, fontSize: 14 },
-    summValue: { color: '#fff', fontWeight: '700', fontSize: 15 },
+    summLabel: { color: COLORS.textSecondary, fontSize: 14, },
+    summValue: { color: '#fff', fontWeight: '800', fontSize: 15 },
     divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.08)', marginVertical: 8 },
     coinsEarned: { color: COLORS.gold, fontSize: 22, fontWeight: '900' },
     inrValue: { color: COLORS.success, fontSize: 13, textAlign: 'right', marginTop: -4 },
-    homeBtn: { borderRadius: 14, paddingVertical: 16, paddingHorizontal: 40, alignItems: 'center', marginBottom: 12 },
+    homeBtnWrapper: { borderRadius: 14, marginBottom: 12, overflow: 'hidden', elevation: 4, shadowColor: '#42A5F5', shadowOpacity: 0.4, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
+    homeBtn: { paddingVertical: 16, paddingHorizontal: 40, alignItems: 'center' },
     homeBtnText: { color: '#fff', fontWeight: '800', fontSize: 16 },
     walletBtn: { paddingVertical: 12, paddingHorizontal: 32, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
-    walletBtnText: { color: COLORS.textSecondary, fontWeight: '700', fontSize: 14 },
+    walletBtnText: { color: COLORS.textSecondary, fontWeight: '800', fontSize: 14 },
 });

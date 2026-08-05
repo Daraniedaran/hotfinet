@@ -1,0 +1,19 @@
+diff --git a/node_modules/@react-native-community/geolocation/android/build.gradle b/node_modules/@react-native-community/geolocation/android/build.gradle
+index aab4a31..a3584f2 100644
+--- a/node_modules/@react-native-community/geolocation/android/build.gradle
++++ b/node_modules/@react-native-community/geolocation/android/build.gradle
+@@ -1,13 +1,4 @@
+-buildscript {
+-  repositories {
+-    google()
+-    mavenCentral()
+-  }
+-
+-  dependencies {
+-    classpath 'com.android.tools.build:gradle:3.5.3'
+-  }
+-}
++// buildscript block removed — AGP is provided by the root project
+ 
+ def getExtOrDefault(name) {
+   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['RNCGeolocation_' + name]

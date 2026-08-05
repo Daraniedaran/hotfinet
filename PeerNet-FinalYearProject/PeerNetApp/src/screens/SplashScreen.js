@@ -40,7 +40,7 @@ const SplashScreen = ({ navigation }) => {
 
 
   return (
-    <LinearGradient colors={['#0A0E21', '#141830', '#0A0E21']} style={styles.container}>
+    <LinearGradient colors={['#050505', '#11111A', '#050505']} style={styles.container}>
       <Animated.View style={[styles.content, { opacity: fade, transform: [{ translateY: slideUp }] }]}>
         {/* WiFi pulse rings */}
         <View style={styles.iconWrapper}>
@@ -97,10 +97,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: { fontSize: 36 },
+  icon: { fontSize: 36, },
   title: {
-    fontSize: 42,
-    fontWeight: '900',
+    fontSize: 42, fontWeight: '900',
     color: '#fff',
     letterSpacing: 2,
     marginBottom: 8,
@@ -112,8 +111,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   coinRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  coinText: { color: COLORS.textSecondary, fontSize: 13 },
-  coinDot: { fontSize: 12 },
+  coinText: { color: COLORS.textSecondary, fontSize: 13, },
+  coinDot: { fontSize: 12, },
   loadingText: {
     position: 'absolute',
     bottom: 50,

@@ -41,11 +41,11 @@ const NearbyProvidersScreen = ({ navigation }) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.provCard}>
-      <View style={styles.provAvatar}>
+      <LinearGradient colors={['#FFCA28', '#F57C00']} style={styles.provAvatarGrad}>
         <Text style={styles.provAvatarText}>
           {(item.name || item.email || 'U').charAt(0).toUpperCase()}
         </Text>
-      </View>
+      </LinearGradient>
       <View style={styles.provInfo}>
         <Text style={styles.provName}>{item.name || 'Provider'}</Text>
         <Text style={styles.provEmail} numberOfLines={1}>{item.email}</Text>
@@ -58,7 +58,7 @@ const NearbyProvidersScreen = ({ navigation }) => {
         style={styles.reqBtn}
         onPress={() => navigation.navigate('RequestInternet')}
       >
-        <LinearGradient colors={['#1E90FF', '#0060CC']} style={styles.reqBtnGrad}>
+        <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.reqBtnGrad}>
           <Text style={styles.reqBtnText}>Request</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -66,7 +66,7 @@ const NearbyProvidersScreen = ({ navigation }) => {
   );
 
   return (
-    <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
+    <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backBtnText}>← Back</Text>
@@ -111,15 +111,15 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16 },
   backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
-  backBtnText: { color: COLORS.primary, fontWeight: '700' },
+  backBtnText: { color: COLORS.primary, fontWeight: '800' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
   list: { paddingHorizontal: 20, paddingBottom: 40 },
   provCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', gap: 12 },
-  provAvatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
+  provAvatarGrad: { width: 50, height: 50, borderRadius: 25, justifyContent: 'center', alignItems: 'center' },
   provAvatarText: { color: '#fff', fontWeight: '800', fontSize: 22 },
   provInfo: { flex: 1 },
-  provName: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  provEmail: { color: COLORS.textMuted, fontSize: 12 },
+  provName: { color: '#fff', fontWeight: '800', fontSize: 15 },
+  provEmail: { color: COLORS.textMuted, fontSize: 12, },
   availBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 4 },
   availDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: COLORS.success },
   availText: { color: COLORS.success, fontSize: 11, fontWeight: '600' },
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   reqBtnText: { color: '#fff', fontWeight: '800', fontSize: 13 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12, paddingHorizontal: 40, paddingTop: 60 },
   loadingText: { color: COLORS.textSecondary, fontSize: 14, marginTop: 10 },
-  emptyIcon: { fontSize: 52 },
+  emptyIcon: { fontSize: 52, },
   emptyTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
   emptyText: { color: COLORS.textSecondary, fontSize: 13, textAlign: 'center', lineHeight: 20 },
 });

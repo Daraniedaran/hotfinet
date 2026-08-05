@@ -63,7 +63,7 @@ const TransactionHistoryScreen = ({ navigation }) => {
     };
 
     return (
-        <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
+        <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
             {/* Header */}
             <View style={styles.headerRow}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
@@ -102,18 +102,18 @@ const styles = StyleSheet.create({
     container: { flex: 1 },
     headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16 },
     backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
-    backBtnText: { color: COLORS.primary, fontWeight: '700' },
+    backBtnText: { color: COLORS.primary, fontWeight: '800' },
     headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
     list: { paddingHorizontal: 20, paddingBottom: 40 },
     txCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', gap: 12 },
-    txIcon: { fontSize: 26 },
+    txIcon: { fontSize: 26, },
     txBody: { flex: 1 },
     txDesc: { color: '#fff', fontSize: 14, fontWeight: '600' },
     txDate: { color: COLORS.textMuted, fontSize: 11, marginTop: 3 },
     txCoins: { fontWeight: '800', fontSize: 16, textAlign: 'right' },
     txCoinLabel: { color: COLORS.textMuted, fontSize: 11, fontWeight: '400' },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-    emptyIcon: { fontSize: 48 },
+    emptyIcon: { fontSize: 48, },
     emptyTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
     emptyText: { color: COLORS.textSecondary, fontSize: 14, textAlign: 'center' },
 });

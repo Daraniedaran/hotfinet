@@ -14,10 +14,10 @@ import { getTransactionHistory, coinsToINR } from '../services/walletService';
 import { COLORS } from '../theme/colors';
 
 const COIN_PACKAGES = [
-  { id: 1, coins: 100, inr: 10, label: 'Starter', color: ['#1E90FF', '#0060CC'] },
-  { id: 2, coins: 500, inr: 50, label: 'Popular 🔥', color: ['#8B5CF6', '#6D28D9'] },
-  { id: 3, coins: 1000, inr: 100, label: 'Value', color: ['#FFD700', '#FF8C00'] },
-  { id: 4, coins: 2000, inr: 200, label: 'Pro', color: ['#14B8A6', '#059669'] },
+  { id: 1, coins: 100, inr: 10, label: 'Starter', color: ['#42A5F5', '#1976D2'] },
+  { id: 2, coins: 500, inr: 50, label: 'Popular 🔥', color: ['#AB47BC', '#7B1FA2'] },
+  { id: 3, coins: 1000, inr: 100, label: 'Value', color: ['#FFCA28', '#F57C00'] },
+  { id: 4, coins: 2000, inr: 200, label: 'Pro', color: ['#26A69A', '#00796B'] },
 ];
 
 const txIcon = (type) => {
@@ -75,7 +75,7 @@ const WalletScreen = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
+    <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
       <FlatList
         data={txList}
         keyExtractor={item => item.id}
@@ -93,13 +93,13 @@ const WalletScreen = ({ navigation }) => {
             </View>
 
             {/* Balance Card */}
-            <LinearGradient colors={['#1E90FF', '#6D28D9']} style={styles.balCard}>
+            <LinearGradient colors={['#3A8DFF', '#8B5CF6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balCard}>
               <Text style={styles.balLabel}>Total Coin Balance</Text>
               <View style={styles.balRow}>
                 <Text style={styles.balCoin}>🪙</Text>
                 <Text style={styles.balAmount}>{coins}</Text>
               </View>
-              <Text style={styles.balInr}>≈ ₹{coinsToINR(coins)} Indian Rupees</Text>
+              <Text style={styles.balInr}>≈ ₹{coinsToINR(coins)}</Text>
               <View style={styles.rateRow}>
                 <View style={styles.rateChip}><Text style={styles.rateText}>200 MB = 100 🪙</Text></View>
                 <View style={styles.rateChip}><Text style={styles.rateText}>1 🪙 = ₹0.10</Text></View>
@@ -151,18 +151,18 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: 20, paddingTop: 52, paddingBottom: 40 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 },
   backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
-  backBtnText: { color: COLORS.primary, fontWeight: '700' },
+  backBtnText: { color: COLORS.primary, fontWeight: '800' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
   balCard: { borderRadius: 20, padding: 22, marginBottom: 24 },
   balLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6 },
   balRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
-  balCoin: { fontSize: 32 },
+  balCoin: { fontSize: 32, },
   balAmount: { fontSize: 52, fontWeight: '900', color: '#fff' },
   balInr: { color: 'rgba(255,255,255,0.65)', fontSize: 14, marginBottom: 14 },
   rateRow: { flexDirection: 'row', gap: 10 },
   rateChip: { backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 8, paddingVertical: 5, paddingHorizontal: 10 },
   rateText: { color: '#fff', fontSize: 12, fontWeight: '600' },
-  sectionTitle: { color: COLORS.textSecondary, fontSize: 13, fontWeight: '700', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.8 },
+  sectionTitle: { color: COLORS.textSecondary, fontSize: 13, fontWeight: '800', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.8 },
   pkgGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 24 },
   pkgCard: { width: '47%', borderRadius: 14, overflow: 'hidden' },
   pkgGrad: { padding: 16, minHeight: 90 },
@@ -172,10 +172,10 @@ const styles = StyleSheet.create({
   txHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   viewAll: { color: COLORS.primary, fontSize: 13, fontWeight: '600' },
   txRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, marginBottom: 8, gap: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)' },
-  txIcon: { fontSize: 22 },
+  txIcon: { fontSize: 22, },
   txInfo: { flex: 1 },
   txDesc: { color: '#fff', fontSize: 14, fontWeight: '600' },
   txDate: { color: COLORS.textMuted, fontSize: 12, marginTop: 2 },
   txAmount: { fontSize: 15, fontWeight: '800' },
-  emptyText: { color: COLORS.textMuted, textAlign: 'center', marginVertical: 20, fontSize: 14 },
+  emptyText: { color: COLORS.textMuted, textAlign: 'center', marginVertical: 20, fontSize: 14, },
 });

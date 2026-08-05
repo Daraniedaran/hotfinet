@@ -17,6 +17,8 @@ import RequestInternetScreen from '../screens/RequestInternetScreen';
 import NearbyProvidersScreen from '../screens/NearbyProvidersScreen';
 import ProviderRequestsScreen from '../screens/ProviderRequestsScreen';
 import QRDisplayScreen from '../screens/QRDisplayScreen';
+import QRScannerScreen from '../screens/QRScannerScreen';
+import WaitingForAcceptScreen from '../screens/WaitingForAcceptScreen';
 import SessionScreen from '../screens/SessionScreen';
 import SessionCompleteScreen from '../screens/SessionCompleteScreen';
 import TransactionHistoryScreen from '../screens/TransactionHistoryScreen';
@@ -35,10 +37,10 @@ const LoadingScreen = () => {
     ).start();
   }, []);
   return (
-    <LinearGradient colors={['#0A0E21', '#141830', '#0A0E21']} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <LinearGradient colors={['#050505', '#11111A', '#050505']} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Animated.Text style={{ fontSize: 56, transform: [{ scale: pulse }] }}>📡</Animated.Text>
       <Text style={{ color: '#fff', fontSize: 36, fontWeight: '900', letterSpacing: 2, marginTop: 20 }}>HotFiNet</Text>
-      <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginTop: 8 }}>Share Internet. Earn Coins.</Text>
+      <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '500', marginTop: 8 }}>Share Internet. Earn Coins.</Text>
     </LinearGradient>
   );
 };
@@ -72,7 +74,9 @@ const AppNavigator = () => {
             <Stack.Screen name="RequestInternet" component={RequestInternetScreen} />
             <Stack.Screen name="NearbyProviders" component={NearbyProvidersScreen} />
             <Stack.Screen name="ProviderRequests" component={ProviderRequestsScreen} />
+            <Stack.Screen name="WaitingForAccept" component={WaitingForAcceptScreen} />
             <Stack.Screen name="QRDisplay" component={QRDisplayScreen} />
+            <Stack.Screen name="QRScanner" component={QRScannerScreen} />
             <Stack.Screen name="Session" component={SessionScreen} />
             <Stack.Screen name="SessionComplete" component={SessionCompleteScreen} />
             <Stack.Screen name="TransactionHistory" component={TransactionHistoryScreen} />

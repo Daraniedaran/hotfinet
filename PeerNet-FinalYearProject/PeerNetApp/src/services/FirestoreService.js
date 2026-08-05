@@ -83,7 +83,6 @@ export const createRequest = async (requesterId, providerId, mb, coinsOffered, r
   });
 
   const userRef = doc(db(), 'users', requesterId);
-  batch.update(userRef, { coins: increment(-coinsOffered) });
 
   // Notify the provider
   pushNotification(
@@ -120,12 +119,14 @@ export const getRequesterActiveRequest = (requesterId, callback) => {
   });
 };
 
-export const acceptRequest = async (requestId, requesterId) => {
+export const acceptRequest = async (requestId, requesterId, ssid = '', password = '') => {
   const batch = writeBatch(db());
 
   batch.update(doc(db(), 'requests', requestId), {
     status: 'accepted',
     acceptedAt: serverTimestamp(),
+    hotspotSSID: ssid,
+    hotspotPassword: password,
   });
 
   // Notify the requester
@@ -134,30 +135,52 @@ export const acceptRequest = async (requestId, requesterId) => {
       batch,
       requesterId,
       '✅ Request Accepted!',
-      'Your provider accepted. Scan the QR code to connect to their hotspot.',
+      'Your provider accepted. Open the app to scan the QR code.',
     );
   }
 
   await batch.commit();
 };
 
+export const markRequestConnected = async (requestId, providerId, requesterId) => {
+  const batch = writeBatch(db());
+
+  batch.update(doc(db(), 'requests', requestId), {
+    status: 'connected',
+    connectedAt: serverTimestamp(),
+  });
+
+  // Notify the provider
+  if (providerId) {
+    pushNotification(
+      batch,
+      providerId,
+      '🔗 Device Connected',
+      'The receiver has successfully connected to your hotspot.',
+    );
+  }
+
+  await batch.commit();
+};
+
+export const listenRequestStatus = (requestId, callback) => {
+  return onSnapshot(doc(db(), 'requests', requestId), (snap) => {
+    if (snap.exists()) {
+      callback({ id: snap.id, ...snap.data() });
+    }
+  });
+};
+
 export const ignoreRequest = async (requestId, requesterId, coinsOffered) => {
   const batch = writeBatch(db());
   batch.update(doc(db(), 'requests', requestId), { status: 'ignored' });
-  batch.update(doc(db(), 'users', requesterId), { coins: increment(coinsOffered) });
-  batch.set(doc(collection(db(), 'users', requesterId, 'transactions')), {
-    type: 'refund',
-    coins: coinsOffered,
-    description: '↩️ Request cancelled – refund',
-    createdAt: serverTimestamp(),
-  });
 
   // Notify the requester
   pushNotification(
     batch,
     requesterId,
     '❌ Request Declined',
-    `Your request was declined. 🪙 ${coinsOffered} coins have been refunded to your wallet.`,
+    'Your request was declined by the provider.',
   );
 
   await batch.commit();
@@ -179,6 +202,7 @@ export const completeSession = async (requestId, requesterId, providerId, coinsT
   });
 
   batch.update(doc(db(), 'users', requesterId), {
+    coins: increment(-coinsToTransfer),
     totalMBConsumed: increment(mbUsed),
     totalSessionsAsRequester: increment(1),
   });

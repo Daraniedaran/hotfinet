@@ -53,7 +53,7 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient colors={['#0A0E21', '#141830', '#0A0E21']} style={styles.gradient}>
+    <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.gradient}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -100,8 +100,8 @@ const LoginScreen = ({ navigation }) => {
             {loading ? (
               <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 20 }} />
             ) : (
-              <TouchableOpacity onPress={handleLogin}>
-                <LinearGradient colors={['#1E90FF', '#0060CC']} style={styles.button}>
+              <TouchableOpacity onPress={handleLogin} style={styles.buttonWrapper}>
+                <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.button}>
                   <Text style={styles.buttonText}>SIGN IN</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  icon: { fontSize: 34 },
+  icon: { fontSize: 34, },
   title: { fontSize: 36, fontWeight: '900', color: '#fff', letterSpacing: 1.5 },
   subtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 6 },
   card: {
@@ -163,15 +163,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   forgotRow: { alignItems: 'flex-end', marginTop: 8 },
-  forgotText: { color: COLORS.primaryLight, fontSize: 13 },
-  button: {
+  forgotText: { color: COLORS.primaryLight, fontSize: 13, },
+  buttonWrapper: {
     borderRadius: 14,
+    marginTop: 20,
+    overflow: 'hidden',
+    elevation: 4,
+    shadowColor: '#42A5F5',
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+  },
+  button: {
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 20,
   },
   buttonText: { color: '#fff', fontWeight: '800', fontSize: 16, letterSpacing: 1 },
   registerRow: { alignItems: 'center' },
-  registerText: { color: COLORS.textSecondary, fontSize: 14 },
-  registerLink: { color: COLORS.primary, fontWeight: '700' },
+  registerText: { color: COLORS.textSecondary, fontSize: 14, },
+  registerLink: { color: COLORS.primary, fontWeight: '800' },
 });

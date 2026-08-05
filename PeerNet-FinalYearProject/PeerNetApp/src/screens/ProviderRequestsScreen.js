@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,7 @@ const ProviderRequestsScreen = ({ navigation }) => {
   const [accepting, setAccepting] = useState(null);
   const [ignoring, setIgnoring] = useState(null);
   const [requesterProfiles, setRequesterProfiles] = useState({});
+  const requesterProfilesRef = useRef({});
   const [hotspotSSID, setHotspotSSID] = useState('');
   const [hotspotPass, setHotspotPass] = useState('');
 
@@ -40,16 +41,18 @@ const ProviderRequestsScreen = ({ navigation }) => {
 
     const unsub = listenProviderRequests(user.uid, async (reqs) => {
       setRequests(reqs);
-      // Load requester profiles for names
+      // Load requester profiles for names using ref to avoid stale closure
       const profiles = {};
       for (const req of reqs) {
-        if (!requesterProfiles[req.requesterId]) {
+        if (!requesterProfilesRef.current[req.requesterId]) {
           const p = await getUserProfile(req.requesterId);
           if (p) profiles[req.requesterId] = p;
         }
       }
       if (Object.keys(profiles).length > 0) {
-        setRequesterProfiles(prev => ({ ...prev, ...profiles }));
+        const updated = { ...requesterProfilesRef.current, ...profiles };
+        requesterProfilesRef.current = updated;
+        setRequesterProfiles(updated);
       }
     });
 
@@ -71,7 +74,7 @@ const ProviderRequestsScreen = ({ navigation }) => {
 
     setAccepting(req.id);
     try {
-      await acceptRequest(req.id, req.requesterId);
+      await acceptRequest(req.id, req.requesterId, hotspotSSID, hotspotPass);
       navigation.navigate('QRDisplay', {
         requestId: req.id,
         requesterId: req.requesterId,
@@ -121,9 +124,9 @@ const ProviderRequestsScreen = ({ navigation }) => {
     return (
       <View style={styles.reqCard}>
         <View style={styles.reqHeader}>
-          <View style={styles.reqAvatar}>
+          <LinearGradient colors={['#AB47BC', '#7B1FA2']} style={styles.reqAvatarGrad}>
             <Text style={styles.reqAvatarText}>{initial}</Text>
-          </View>
+          </LinearGradient>
           <View style={styles.reqInfo}>
             <Text style={styles.reqName}>{name}</Text>
             <Text style={styles.reqEmail}>{requester?.email || item.requesterId.slice(0, 16) + '...'}</Text>
@@ -165,7 +168,7 @@ const ProviderRequestsScreen = ({ navigation }) => {
             onPress={() => handleAccept(item)}
             disabled={accepting === item.id}
           >
-            <LinearGradient colors={['#10B981', '#059669']} style={styles.acceptBtn}>
+            <LinearGradient colors={['#26A69A', '#00796B']} style={styles.acceptBtn}>
               {accepting === item.id
                 ? <ActivityIndicator size="small" color="#fff" />
                 : <Text style={styles.acceptBtnText}>✓ Accept</Text>
@@ -178,7 +181,7 @@ const ProviderRequestsScreen = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
+    <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backBtnText}>← Back</Text>
@@ -214,30 +217,30 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 52, paddingBottom: 16 },
   backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
-  backBtnText: { color: COLORS.primary, fontWeight: '700' },
+  backBtnText: { color: COLORS.primary, fontWeight: '800' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
   list: { paddingHorizontal: 20, paddingBottom: 40 },
-  reqCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 16, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: 'rgba(30,144,255,0.25)' },
+  reqCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 16, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
   reqHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 14, gap: 12 },
-  reqAvatar: { width: 46, height: 46, borderRadius: 23, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
+  reqAvatarGrad: { width: 46, height: 46, borderRadius: 23, justifyContent: 'center', alignItems: 'center' },
   reqAvatarText: { color: '#fff', fontWeight: '800', fontSize: 20 },
   reqInfo: { flex: 1 },
-  reqName: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  reqName: { color: '#fff', fontWeight: '800', fontSize: 15 },
   reqEmail: { color: COLORS.textMuted, fontSize: 12, marginTop: 1 },
   newBadge: { backgroundColor: COLORS.primary, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
   newBadgeText: { color: '#fff', fontSize: 10, fontWeight: '800' },
   reqDetails: { flexDirection: 'row', gap: 8, marginBottom: 14 },
   detailChip: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 10, padding: 8 },
-  detailIcon: { fontSize: 14 },
-  detailText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  detailIcon: { fontSize: 14, },
+  detailText: { color: '#fff', fontWeight: '800', fontSize: 13 },
   actionRow: { flexDirection: 'row', gap: 10 },
   ignoreBtn: { flex: 1, borderRadius: 10, paddingVertical: 12, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(239,68,68,0.5)' },
-  ignoreBtnText: { color: COLORS.error, fontWeight: '700', fontSize: 14 },
+  ignoreBtnText: { color: COLORS.error, fontWeight: '800', fontSize: 14 },
   acceptBtnWrapper: { flex: 1.5, borderRadius: 10, overflow: 'hidden' },
   acceptBtn: { paddingVertical: 12, alignItems: 'center' },
   acceptBtnText: { color: '#fff', fontWeight: '800', fontSize: 14 },
   emptyArea: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12, paddingHorizontal: 40 },
-  emptyIcon: { fontSize: 56 },
+  emptyIcon: { fontSize: 56, },
   emptyTitle: { color: '#fff', fontSize: 20, fontWeight: '800' },
   emptyText: { color: COLORS.textSecondary, fontSize: 14, textAlign: 'center', lineHeight: 22 },
 });

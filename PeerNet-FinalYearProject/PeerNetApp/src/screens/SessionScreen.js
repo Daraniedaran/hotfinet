@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { completeSession } from '../services/FirestoreService';
+import { calculateCoinsForMB } from '../services/walletService';
 import { COLORS } from '../theme/colors';
 
 // Assume avg speed: 2 MB per minute
@@ -44,14 +45,14 @@ const SessionScreen = ({ navigation, route }) => {
         return `${m}:${s}`;
     };
 
-    // Proportionally calculate coins used
-    const coinsUsed = mb > 0 ? Math.ceil((estimatedMB / mb) * coinsOffered) : coinsOffered;
+    // Calculate coins precisely based on actual usage
+    const coinsUsed = calculateCoinsForMB(estimatedMB);
     const progressPct = Math.min((estimatedMB / mb) * 100, 100);
 
     const handleEndSession = () => {
         Alert.alert(
             '🏁 End Session',
-            `End internet sharing?\n\nEstimated ${estimatedMB} MB used → ${coinsUsed} coins earned.`,
+            `End internet sharing?\n\nEstimated ${estimatedMB} MB used → ${coinsUsed} coins will be transferred.`,
             [
                 { text: 'Continue Sharing', style: 'cancel' },
                 {
@@ -83,7 +84,7 @@ const SessionScreen = ({ navigation, route }) => {
     };
 
     return (
-        <LinearGradient colors={['#0A0E21', '#141830']} style={styles.container}>
+        <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
                 {/* Live Indicator */}
                 <View style={styles.liveRow}>
@@ -92,7 +93,7 @@ const SessionScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Timer */}
-                <LinearGradient colors={['#1E90FF', '#6D28D9']} style={styles.timerCard}>
+                <LinearGradient colors={['#3A8DFF', '#8B5CF6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.timerCard}>
                     <Text style={styles.timerLabel}>Session Duration</Text>
                     <Text style={styles.timerValue}>{formatTime(elapsed)}</Text>
                     <Text style={styles.timerSub}>Sharing with {requesterName}</Text>
@@ -121,7 +122,7 @@ const SessionScreen = ({ navigation, route }) => {
                     <View style={styles.divider} />
 
                     <View style={styles.usageRow}>
-                        <Text style={styles.usageLabel}>Coins To Earn</Text>
+                        <Text style={styles.usageLabel}>Coins Transfer</Text>
                         <Text style={[styles.usageValue, { color: COLORS.gold }]}>🪙 {coinsUsed}</Text>
                     </View>
                     <View style={styles.usageRow}>
@@ -140,7 +141,7 @@ const SessionScreen = ({ navigation, route }) => {
                 {/* End Session */}
                 <TouchableOpacity onPress={handleEndSession} disabled={ending}>
                     <LinearGradient
-                        colors={ending ? ['#555', '#555'] : ['#EF4444', '#DC2626']}
+                        colors={ending ? ['#555', '#555'] : ['#93291E', '#ED213A']}
                         style={styles.endBtn}
                     >
                         <Text style={styles.endBtnText}>
@@ -168,8 +169,8 @@ const styles = StyleSheet.create({
     usageCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 16, padding: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 14 },
     usageTitle: { color: '#fff', fontWeight: '800', fontSize: 16, marginBottom: 14 },
     usageRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-    usageLabel: { color: COLORS.textSecondary, fontSize: 14 },
-    usageValue: { color: '#fff', fontWeight: '700', fontSize: 15 },
+    usageLabel: { color: COLORS.textSecondary, fontSize: 14, },
+    usageValue: { color: '#fff', fontWeight: '800', fontSize: 15 },
     progressBg: { height: 8, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 4, marginVertical: 10, overflow: 'hidden' },
     progressFill: { height: '100%', borderRadius: 4 },
     progressPct: { color: COLORS.textMuted, fontSize: 12, textAlign: 'right' },
