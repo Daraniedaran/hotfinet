@@ -75,14 +75,12 @@ const ProviderRequestsScreen = ({ navigation }) => {
     setAccepting(req.id);
     try {
       await acceptRequest(req.id, req.requesterId, hotspotSSID, hotspotPass);
-      navigation.navigate('QRDisplay', {
+      navigation.navigate('Session', {
         requestId: req.id,
         requesterId: req.requesterId,
         providerId: uid,
         mb: req.mb,
         coinsOffered: req.coinsOffered,
-        ssid: hotspotSSID,
-        password: hotspotPass,
         requesterName: requesterProfiles[req.requesterId]?.name || 'Requester',
       });
     } catch (e) {

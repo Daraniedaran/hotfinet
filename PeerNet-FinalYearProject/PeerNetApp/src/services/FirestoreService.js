@@ -135,7 +135,7 @@ export const acceptRequest = async (requestId, requesterId, ssid = '', password 
       batch,
       requesterId,
       '✅ Request Accepted!',
-      'Your provider accepted. Open the app to scan the QR code.',
+      'Your provider accepted. Connecting to hotspot automatically...',
     );
   }
 

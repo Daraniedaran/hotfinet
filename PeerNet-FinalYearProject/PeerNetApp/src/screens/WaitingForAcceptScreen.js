@@ -139,7 +139,7 @@ const WaitingForAcceptScreen = ({ navigation, route }) => {
                 {/* Info note */}
                 <View style={styles.noteCard}>
                     <Text style={styles.noteText}>
-                        ⏳ Once the provider accepts, you'll be taken to the QR scanner automatically to connect to their hotspot.
+                        ⚡ Once the provider accepts, your device will automatically connect to their Wi-Fi hotspot and start the session.
                     </Text>
                 </View>
             </View>
