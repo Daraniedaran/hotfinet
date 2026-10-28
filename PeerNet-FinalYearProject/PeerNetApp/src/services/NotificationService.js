@@ -86,26 +86,31 @@ export const listenInAppNotifications = (uid, onReceived) => {
     // Track already-seen doc IDs so we only alert on truly new arrivals
     const seen = new Set();
 
-    return onSnapshot(q, (snap) => {
-        snap.docs.forEach(async (d) => {
-            const data = d.data();
-            if (data.read || seen.has(d.id)) return;
+    return onSnapshot(
+        q,
+        (snap) => {
+            if (!snap) return;
+            snap.docs.forEach(async (d) => {
+                const data = d.data();
+                if (data.read || seen.has(d.id)) return;
 
-            seen.add(d.id);
+                seen.add(d.id);
 
-            const title = data.title || 'HotFiNet';
-            const body = data.body || '';
+                const title = data.title || 'HotFiNet';
+                const body = data.body || '';
 
-            // Show in-app alert
-            Alert.alert(title, body);
-            if (onReceived) onReceived({ title, body });
+                // Show in-app alert
+                Alert.alert(title, body);
+                if (onReceived) onReceived({ title, body });
 
-            // Mark as read
-            try {
-                await updateDoc(doc(db(), 'users', uid, 'notifications', d.id), { read: true });
-            } catch (e) {
-                console.warn('[NotificationService] markRead error:', e.message);
-            }
-        });
-    });
+                // Mark as read
+                try {
+                    await updateDoc(doc(db(), 'users', uid, 'notifications', d.id), { read: true });
+                } catch (e) {
+                    console.warn('[NotificationService] markRead error:', e.message);
+                }
+            });
+        },
+        (error) => console.warn('[NotificationService] listenInAppNotifications:', error.message),
+    );
 };

@@ -185,7 +185,7 @@ const ProviderRequestsScreen = ({ navigation }) => {
           <Text style={styles.backBtnText}>← Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Incoming Requests</Text>
-        <View style={{ width: 60 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       {requests.length > 0 ? (
@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
   backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
   backBtnText: { color: COLORS.primary, fontWeight: '800' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  headerSpacer: { width: 60 },
   list: { paddingHorizontal: 20, paddingBottom: 40 },
   reqCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 16, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
   reqHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 14, gap: 12 },

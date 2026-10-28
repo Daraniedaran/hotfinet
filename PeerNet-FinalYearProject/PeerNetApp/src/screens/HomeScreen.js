@@ -8,7 +8,6 @@ import {
   ScrollView,
   Animated,
   Alert,
-  InteractionManager,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { getAuth } from '@react-native-firebase/auth';
@@ -102,7 +101,7 @@ const HomeScreen = ({ navigation }) => {
       pulseAnim.stopAnimation();
       pulseAnim.setValue(1);
     }
-  }, [isAvailable]);
+  }, [isAvailable, pulseAnim]);
 
   const handleToggle = async (value) => {
     setIsAvailable(value);
@@ -251,6 +250,8 @@ const HomeScreen = ({ navigation }) => {
           </LinearGradient>
         </TouchableOpacity>
 
+        <Text style={styles.footerText}>Developed by DD❤️</Text>
+
       </ScrollView>
     </LinearGradient>
   );
@@ -353,4 +354,11 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   logoutText: { color: '#ff6b6b', fontWeight: '800', fontSize: 15 },
+  footerText: {
+    color: COLORS.textMuted,
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 24,
+    letterSpacing: 0.5,
+  },
 });

@@ -16,7 +16,6 @@ import WifiManager from 'react-native-wifi-reborn';
 const WaitingForAcceptScreen = ({ navigation, route }) => {
     const {
         requestId,
-        providerId,
         providerName,
         mb,
         coinsOffered,
@@ -25,7 +24,7 @@ const WaitingForAcceptScreen = ({ navigation, route }) => {
     const pulse = useRef(new Animated.Value(1)).current;
     const spin = useRef(new Animated.Value(0)).current;
 
-    const [connecting, setConnecting] = useState(false);
+    const [, setConnecting] = useState(false);
     const [connectMsg, setConnectMsg] = useState('Waiting for Provider');
     const [connectSub, setConnectSub] = useState(`${providerName || 'Provider'} will see your request shortly`);
 
@@ -42,7 +41,7 @@ const WaitingForAcceptScreen = ({ navigation, route }) => {
         Animated.loop(
             Animated.timing(spin, { toValue: 1, duration: 3000, easing: Easing.linear, useNativeDriver: true }),
         ).start();
-    }, []);
+    }, [pulse, spin]);
 
     const spinInterpolate = spin.interpolate({
         inputRange: [0, 1],
@@ -90,7 +89,7 @@ const WaitingForAcceptScreen = ({ navigation, route }) => {
         });
 
         return unsub;
-    }, [requestId]);
+    }, [requestId, navigation, providerName]);
 
     return (
         <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.container}>
@@ -100,14 +99,14 @@ const WaitingForAcceptScreen = ({ navigation, route }) => {
                     <Text style={styles.backBtnText}>← Back</Text>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Waiting</Text>
-                <View style={{ width: 60 }} />
+                <View style={styles.headerSpacer} />
             </View>
 
             <View style={styles.centerArea}>
                 {/* Animated radar / waiting indicator */}
                 <View style={styles.radarContainer}>
                     <Animated.View style={[styles.radarRing, styles.radarOuter, { transform: [{ scale: pulse }] }]} />
-                    <Animated.View style={[styles.radarRing, styles.radarMiddle, { transform: [{ scale: pulse }], opacity: 0.5 }]} />
+                    <Animated.View style={[styles.radarRing, styles.radarMiddle, { transform: [{ scale: pulse }] }, styles.halfOpacity]} />
                     <Animated.View style={[styles.spinnerWrapper, { transform: [{ rotate: spinInterpolate }] }]}>
                         <Text style={styles.radarIcon}>📡</Text>
                     </Animated.View>
@@ -155,6 +154,8 @@ const styles = StyleSheet.create({
     backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
     backBtnText: { color: COLORS.primary, fontWeight: '800' },
     headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+    headerSpacer: { width: 60 },
+    halfOpacity: { opacity: 0.5 },
     centerArea: { flex: 1, alignItems: 'center', paddingHorizontal: 24, paddingTop: 40 },
     radarContainer: { width: 160, height: 160, justifyContent: 'center', alignItems: 'center', marginBottom: 32 },
     radarRing: { position: 'absolute', borderRadius: 999, borderWidth: 2 },

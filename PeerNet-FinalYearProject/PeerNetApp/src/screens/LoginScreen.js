@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { loginUser, sendPasswordReset } from '../services/AuthService';
@@ -55,14 +56,14 @@ const LoginScreen = ({ navigation }) => {
   return (
     <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.gradient}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.flex1}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           {/* Logo */}
           <View style={styles.logoArea}>
             <View style={styles.iconCircle}>
-              <Text style={styles.icon}>📡</Text>
+              <Image source={require('../../assets/logo-round.png')} style={styles.logo} />
             </View>
             <Text style={styles.title}>HotFiNet</Text>
             <Text style={styles.subtitle}>Welcome back! Sign in to continue</Text>
@@ -98,7 +99,7 @@ const LoginScreen = ({ navigation }) => {
             </TouchableOpacity>
 
             {loading ? (
-              <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 20 }} />
+              <ActivityIndicator size="large" color={COLORS.primary} style={styles.loadingSpinner} />
             ) : (
               <TouchableOpacity onPress={handleLogin} style={styles.buttonWrapper}>
                 <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.button}>
@@ -117,6 +118,8 @@ const LoginScreen = ({ navigation }) => {
               <Text style={styles.registerLink}>Create Account</Text>
             </Text>
           </TouchableOpacity>
+
+          <Text style={styles.footerText}>Developed by DD❤️</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>
@@ -127,6 +130,8 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   gradient: { flex: 1 },
+  flex1: { flex: 1 },
+  loadingSpinner: { marginTop: 20 },
   container: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 80, paddingBottom: 40 },
   logoArea: { alignItems: 'center', marginBottom: 40 },
   iconCircle: {
@@ -140,7 +145,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  icon: { fontSize: 34, },
+  logo: { width: 60, height: 60, borderRadius: 30 },
   title: { fontSize: 36, fontWeight: '900', color: '#fff', letterSpacing: 1.5 },
   subtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 6 },
   card: {
@@ -182,4 +187,12 @@ const styles = StyleSheet.create({
   registerRow: { alignItems: 'center' },
   registerText: { color: COLORS.textSecondary, fontSize: 14, },
   registerLink: { color: COLORS.primary, fontWeight: '800' },
+  footerText: {
+    color: COLORS.textMuted,
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 'auto',
+    paddingTop: 24,
+    letterSpacing: 0.5,
+  },
 });

@@ -72,7 +72,7 @@ const NearbyProvidersScreen = ({ navigation }) => {
           <Text style={styles.backBtnText}>← Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Nearby Providers</Text>
-        <View style={{ width: 60 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       {loading ? (
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
   backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
   backBtnText: { color: COLORS.primary, fontWeight: '800' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  headerSpacer: { width: 60 },
   list: { paddingHorizontal: 20, paddingBottom: 40 },
   provCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', gap: 12 },
   provAvatarGrad: { width: 50, height: 50, borderRadius: 25, justifyContent: 'center', alignItems: 'center' },

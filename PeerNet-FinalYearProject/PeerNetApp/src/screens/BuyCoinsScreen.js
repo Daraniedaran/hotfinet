@@ -71,7 +71,7 @@ const BuyCoinsScreen = ({ navigation, route }) => {
                         <Text style={styles.backBtnText}>← Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Buy Coins</Text>
-                    <View style={{ width: 60 }} />
+                    <View style={styles.headerSpacer} />
                 </View>
 
                 {/* Info Banner */}
@@ -136,7 +136,7 @@ const BuyCoinsScreen = ({ navigation, route }) => {
                             colors={selected ? ['#42A5F5', '#1976D2'] : ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.05)']}
                             style={styles.buyBtn}
                         >
-                            <Text style={[styles.buyBtnText, !selected && { color: 'rgba(219, 216, 216, 0.93)' }]}>
+                            <Text style={[styles.buyBtnText, !selected && styles.buyBtnTextDisabled]}>
                                 {selected ? `Pay ₹${selected.inr} → Get ${selected.coins} Coins` : 'Select a Package'}
                             </Text>
                         </LinearGradient>
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
     backBtnText: { color: COLORS.primary, fontWeight: '800' },
     headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+    headerSpacer: { width: 60 },
     infoBanner: { backgroundColor: 'rgba(30,144,255,0.12)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(30,144,255,0.3)', padding: 14, marginBottom: 24 },
     infoTitle: { color: COLORS.primary, fontWeight: '800', fontSize: 14, marginBottom: 4 },
     infoText: { color: COLORS.textSecondary, fontSize: 13, },
@@ -181,4 +182,5 @@ const styles = StyleSheet.create({
     buyBtnWrapper: { borderRadius: 14, overflow: 'hidden', elevation: 4, shadowColor: '#42A5F5', shadowOpacity: 0.4, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
     buyBtn: { paddingVertical: 16, alignItems: 'center' },
     buyBtnText: { color: '#fff', fontWeight: '800', fontSize: 15 },
+    buyBtnTextDisabled: { color: 'rgba(219, 216, 216, 0.93)' },
 });

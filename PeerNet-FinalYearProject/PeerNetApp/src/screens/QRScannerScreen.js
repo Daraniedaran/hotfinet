@@ -111,7 +111,7 @@ const QRScannerScreen = ({ navigation, route }) => {
                 <View style={styles.resultContainer}>
                     {/* Success icon */}
                     <View style={styles.successIcon}>
-                        <Text style={{ fontSize: 56, }}>✅</Text>
+                        <Text style={styles.resultEmoji}>✅</Text>
                     </View>
 
                     <Text style={styles.resultTitle}>
@@ -156,13 +156,13 @@ const QRScannerScreen = ({ navigation, route }) => {
                     </View>
 
                     {/* Action buttons */}
-                    <TouchableOpacity onPress={handleConnect} style={{ width: '100%', borderRadius: 14, overflow: 'hidden', elevation: 4, shadowColor: '#26A69A', shadowOpacity: 0.4, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } }}>
+                    <TouchableOpacity onPress={handleConnect} style={styles.wifiBtn}>
                         <LinearGradient colors={['#26A69A', '#00796B']} style={styles.connectBtn}>
                             <Text style={styles.connectBtnText}>📶 Open WiFi Settings</Text>
                         </LinearGradient>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={handleStartSession} style={{ width: '100%', marginTop: 14, borderRadius: 14, overflow: 'hidden', elevation: 4, shadowColor: '#42A5F5', shadowOpacity: 0.4, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } }}>
+                    <TouchableOpacity onPress={handleStartSession} style={styles.startBtn}>
                         <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.connectBtn}>
                             <Text style={styles.connectBtnText}>▶ Start Session</Text>
                         </LinearGradient>
@@ -197,7 +197,7 @@ const QRScannerScreen = ({ navigation, route }) => {
                         <Text style={styles.backBtnText}>← Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.scanTitle}>Scan QR Code</Text>
-                    <View style={{ width: 60 }} />
+                    <View style={styles.headerSpacer} />
                 </View>
 
                 {/* Scan frame */}
@@ -241,6 +241,7 @@ const styles = StyleSheet.create({
     backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 10 },
     backBtnText: { color: '#fff', fontWeight: '800' },
     scanTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+    headerSpacer: { width: 60 },
     frameContainer: { alignItems: 'center', justifyContent: 'center' },
     scanFrame: { width: 250, height: 250, position: 'relative' },
     corner: { position: 'absolute', width: 30, height: 30, borderColor: '#1E90FF', borderWidth: 3 },
@@ -260,6 +261,7 @@ const styles = StyleSheet.create({
     container: { flex: 1 },
     resultContainer: { flex: 1, alignItems: 'center', paddingHorizontal: 24, paddingTop: 80 },
     successIcon: { marginBottom: 20 },
+    resultEmoji: { fontSize: 56 },
     resultTitle: { color: '#fff', fontSize: 24, fontWeight: '900', marginBottom: 8 },
     resultSub: { color: COLORS.textSecondary, fontSize: 14, textAlign: 'center', marginBottom: 24 },
     credCard: {
@@ -283,6 +285,8 @@ const styles = StyleSheet.create({
     instructText: { color: COLORS.textMuted, fontSize: 12, lineHeight: 20 },
     connectBtn: { paddingVertical: 16, alignItems: 'center' },
     connectBtnText: { color: '#fff', fontWeight: '800', fontSize: 16 },
+    wifiBtn: { width: '100%', borderRadius: 14, overflow: 'hidden', elevation: 4, shadowColor: '#26A69A', shadowOpacity: 0.4, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
+    startBtn: { width: '100%', marginTop: 14, borderRadius: 14, overflow: 'hidden', elevation: 4, shadowColor: '#42A5F5', shadowOpacity: 0.4, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
     rescanBtn: { marginTop: 12, paddingVertical: 10 },
     rescanBtnText: { color: COLORS.textSecondary, fontWeight: '600', fontSize: 14 },
 });

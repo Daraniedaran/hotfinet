@@ -6,7 +6,6 @@ import {
   getDocs,
   setDoc,
   updateDoc,
-  addDoc,
   onSnapshot,
   query,
   where,
@@ -42,9 +41,13 @@ export const getUserProfile = async (uid) => {
 };
 
 export const listenUserProfile = (uid, callback) => {
-  return onSnapshot(doc(db(), 'users', uid), (snap) => {
-    if (snap.exists()) callback({ id: snap.id, ...snap.data() });
-  });
+  return onSnapshot(
+    doc(db(), 'users', uid),
+    (snap) => {
+      if (snap && snap.exists()) callback({ id: snap.id, ...snap.data() });
+    },
+    (error) => console.warn('[FirestoreService] listenUserProfile:', error.message),
+  );
 };
 
 export const updateUserProfile = async (uid, data) => {
@@ -82,8 +85,6 @@ export const createRequest = async (requesterId, providerId, mb, coinsOffered, r
     createdAt: serverTimestamp(),
   });
 
-  const userRef = doc(db(), 'users', requesterId);
-
   // Notify the provider
   pushNotification(
     batch,
@@ -102,9 +103,14 @@ export const listenProviderRequests = (providerId, callback) => {
     where('providerId', '==', providerId),
     where('status', '==', 'pending')
   );
-  return onSnapshot(q, (snap) => {
-    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-  });
+  return onSnapshot(
+    q,
+    (snap) => {
+      if (!snap) return;
+      callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    },
+    (error) => console.warn('[FirestoreService] listenProviderRequests:', error.message),
+  );
 };
 
 export const getRequesterActiveRequest = (requesterId, callback) => {
@@ -113,10 +119,15 @@ export const getRequesterActiveRequest = (requesterId, callback) => {
     where('requesterId', '==', requesterId),
     where('status', 'in', ['pending', 'accepted'])
   );
-  return onSnapshot(q, (snap) => {
-    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    callback(data.length > 0 ? data[0] : null);
-  });
+  return onSnapshot(
+    q,
+    (snap) => {
+      if (!snap) return;
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      callback(data.length > 0 ? data[0] : null);
+    },
+    (error) => console.warn('[FirestoreService] getRequesterActiveRequest:', error.message),
+  );
 };
 
 export const acceptRequest = async (requestId, requesterId, ssid = '', password = '') => {
@@ -164,11 +175,15 @@ export const markRequestConnected = async (requestId, providerId, requesterId) =
 };
 
 export const listenRequestStatus = (requestId, callback) => {
-  return onSnapshot(doc(db(), 'requests', requestId), (snap) => {
-    if (snap.exists()) {
-      callback({ id: snap.id, ...snap.data() });
-    }
-  });
+  return onSnapshot(
+    doc(db(), 'requests', requestId),
+    (snap) => {
+      if (snap && snap.exists()) {
+        callback({ id: snap.id, ...snap.data() });
+      }
+    },
+    (error) => console.warn('[FirestoreService] listenRequestStatus:', error.message),
+  );
 };
 
 export const ignoreRequest = async (requestId, requesterId, coinsOffered) => {

@@ -4,12 +4,10 @@ import {
   Text,
   StyleSheet,
   Animated,
-  Dimensions,
+  Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS } from '../theme/colors';
-
-const { width } = Dimensions.get('window');
 
 const SplashScreen = ({ navigation }) => {
   const pulse = useRef(new Animated.Value(1)).current;
@@ -34,9 +32,9 @@ const SplashScreen = ({ navigation }) => {
     // Navigate to Login after splash animation
     const timer = setTimeout(() => {
       if (navigation) navigation.replace('Login');
-    }, 2200);
+    }, 3200);
     return () => clearTimeout(timer);
-  }, []);
+  }, [fade, pulse, slideUp, navigation]);
 
 
   return (
@@ -47,7 +45,7 @@ const SplashScreen = ({ navigation }) => {
           <Animated.View style={[styles.ring, styles.ring3, { transform: [{ scale: pulse }] }]} />
           <Animated.View style={[styles.ring, styles.ring2, { transform: [{ scale: pulse }] }]} />
           <View style={styles.iconCircle}>
-            <Text style={styles.icon}>📡</Text>
+            <Image source={require('../../assets/logo-round.png')} style={styles.logo} />
           </View>
         </View>
 
@@ -62,6 +60,7 @@ const SplashScreen = ({ navigation }) => {
       </Animated.View>
 
       <Text style={styles.loadingText}>Loading...</Text>
+      <Text style={styles.creditText}>Developed by DD❤️</Text>
     </LinearGradient>
   );
 };
@@ -97,7 +96,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  icon: { fontSize: 36, },
+  logo: { width: 68, height: 68, borderRadius: 34 },
   title: {
     fontSize: 42, fontWeight: '900',
     color: '#fff',
@@ -118,5 +117,12 @@ const styles = StyleSheet.create({
     bottom: 50,
     color: COLORS.textMuted,
     fontSize: 13,
+  },
+  creditText: {
+    position: 'absolute',
+    bottom: 18,
+    color: COLORS.textMuted,
+    fontSize: 11,
+    letterSpacing: 0.5,
   },
 });

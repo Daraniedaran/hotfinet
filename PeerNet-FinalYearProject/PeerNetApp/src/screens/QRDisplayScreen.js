@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
     View,
     Text,
@@ -27,7 +27,7 @@ const QRDisplayScreen = ({ navigation, route }) => {
 
     const qrValue = generateHotspotQR(ssid, password);
 
-    const handleStartSession = () => {
+    const handleStartSession = useCallback(() => {
         navigation.replace('Session', {
             requestId,
             requesterId,
@@ -36,7 +36,7 @@ const QRDisplayScreen = ({ navigation, route }) => {
             coinsOffered,
             requesterName,
         });
-    };
+    }, [navigation, requestId, requesterId, providerId, mb, coinsOffered, requesterName]);
 
     useEffect(() => {
         if (!requestId) return;
@@ -48,7 +48,7 @@ const QRDisplayScreen = ({ navigation, route }) => {
         });
 
         return unsub;
-    }, [requestId]);
+    }, [requestId, handleStartSession]);
 
     const handleShare = async () => {
         try {
@@ -69,7 +69,7 @@ const QRDisplayScreen = ({ navigation, route }) => {
                         <Text style={styles.backBtnText}>← Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Hotspot QR</Text>
-                    <View style={{ width: 60 }} />
+                    <View style={styles.headerSpacer} />
                 </View>
 
                 {/* Status banner */}
@@ -104,7 +104,7 @@ const QRDisplayScreen = ({ navigation, route }) => {
 
                     {/* QR Code as fallback */}
                     <View style={styles.qrWrapper}>
-                        <Text style={{ textAlign: 'center', marginBottom: 10, color: '#666' }}>Manual fallback</Text>
+                        <Text style={styles.manualFallbackText}>Manual fallback</Text>
                         <QRCode
                             value={qrValue}
                             size={180}
@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
     backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
     backBtnText: { color: COLORS.primary, fontWeight: '800' },
     headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+    headerSpacer: { width: 60 },
     statusBanner: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 14, padding: 16, marginBottom: 16 },
     statusIcon: { fontSize: 28, },
     statusTitle: { color: '#fff', fontWeight: '800', fontSize: 16 },
@@ -175,6 +176,7 @@ const styles = StyleSheet.create({
     qrTitle: { color: '#fff', fontWeight: '800', fontSize: 17, marginBottom: 4 },
     qrSub: { color: COLORS.textSecondary, fontSize: 13, marginBottom: 20 },
     qrWrapper: { alignItems: 'center', backgroundColor: 'white', borderRadius: 16, padding: 20, marginBottom: 20 },
+    manualFallbackText: { textAlign: 'center', marginBottom: 10, color: '#666' },
     wifiDetails: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, marginBottom: 14 },
     wifiRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
     wifiLabel: { color: COLORS.textSecondary, fontSize: 13, },

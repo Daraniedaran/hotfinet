@@ -70,7 +70,7 @@ const TransactionHistoryScreen = ({ navigation }) => {
                     <Text style={styles.backBtnText}>← Back</Text>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Transaction History</Text>
-                <View style={{ width: 60 }} />
+                <View style={styles.headerSpacer} />
             </View>
 
             {loading ? (
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
     backBtnText: { color: COLORS.primary, fontWeight: '800' },
     headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+    headerSpacer: { width: 60 },
     list: { paddingHorizontal: 20, paddingBottom: 40 },
     txCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 14, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', gap: 12 },
     txIcon: { fontSize: 26, },

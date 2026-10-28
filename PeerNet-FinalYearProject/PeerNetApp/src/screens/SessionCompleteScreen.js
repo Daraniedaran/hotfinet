@@ -19,7 +19,7 @@ const SessionCompleteScreen = ({ navigation, route }) => {
             Animated.spring(scaleAnim, { toValue: 1, tension: 80, friction: 8, useNativeDriver: true }),
             Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
         ]).start();
-    }, []);
+    }, [scaleAnim, fadeAnim]);
 
     const formatDuration = (secs) => {
         const m = Math.floor(secs / 60);

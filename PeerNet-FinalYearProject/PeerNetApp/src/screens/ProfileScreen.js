@@ -79,7 +79,7 @@ const ProfileScreen = ({ navigation }) => {
                         <Text style={styles.backBtnText}>← Back</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Profile</Text>
-                    <View style={{ width: 60 }} />
+                    <View style={styles.headerSpacer} />
                 </View>
 
                 {/* Avatar */}
@@ -181,6 +181,8 @@ const ProfileScreen = ({ navigation }) => {
                         }
                     </LinearGradient>
                 </TouchableOpacity>
+
+                <Text style={styles.footerText}>Developed by DD❤️</Text>
             </ScrollView>
         </LinearGradient>
     );
@@ -196,6 +198,7 @@ const styles = StyleSheet.create({
     backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
     backBtnText: { color: COLORS.primary, fontWeight: '800' },
     headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+    headerSpacer: { width: 60 },
     avatarArea: { alignItems: 'center', marginBottom: 24 },
     avatarCircle: { width: 80, height: 80, borderRadius: 40, justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
     avatarText: { fontSize: 36, color: '#fff', fontWeight: '900' },
@@ -218,4 +221,5 @@ const styles = StyleSheet.create({
     saveBtnWrapper: { borderRadius: 14, marginTop: 4, overflow: 'hidden', elevation: 4, shadowColor: '#42A5F5', shadowOpacity: 0.4, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
     saveBtn: { paddingVertical: 16, alignItems: 'center' },
     saveBtnText: { color: '#fff', fontWeight: '800', fontSize: 16 },
+    footerText: { color: COLORS.textMuted, fontSize: 11, textAlign: 'center', marginTop: 24, letterSpacing: 0.5 },
 });

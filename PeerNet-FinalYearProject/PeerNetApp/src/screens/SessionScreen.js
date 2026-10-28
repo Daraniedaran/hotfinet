@@ -21,7 +21,6 @@ const SessionScreen = ({ navigation, route }) => {
         requesterId,
         providerId,
         mb,
-        coinsOffered,
         requesterName,
     } = route.params;
 

@@ -1,0 +1,106 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+  #wrap { width: 100vw; height: 100vh; overflow: hidden; }
+  #wrap.round { border-radius: 50%; }
+  #wrap.inset { box-sizing: border-box; padding: 6%; }
+  #wrap svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="wrap">
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">HotFiNet metallic connectivity emblem</title>
+  <desc id="desc">Silver H and subtly hidden D monogram with Wi-Fi arcs and mobile signal bars on a dark navy blue gradient background.</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="43%" r="75%">
+      <stop offset="0" stop-color="#03091f"/>
+      <stop offset=".58" stop-color="#02071b"/>
+      <stop offset="1" stop-color="#01040f"/>
+    </radialGradient>
+    <linearGradient id="silver" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".18" stop-color="#e9ebf5"/>
+      <stop offset=".42" stop-color="#aeb5ca"/>
+      <stop offset=".58" stop-color="#f9faff"/>
+      <stop offset=".78" stop-color="#b9bfd2"/>
+      <stop offset="1" stop-color="#eef0fa"/>
+    </linearGradient>
+    <linearGradient id="silver2" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".35" stop-color="#c8cde0"/>
+      <stop offset=".7" stop-color="#858eac"/>
+      <stop offset="1" stop-color="#f3f4ff"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".45" stop-color="#9ccaff"/>
+      <stop offset="1" stop-color="#7774c8"/>
+    </linearGradient>
+    <linearGradient id="orbit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8d8bff"/>
+      <stop offset=".5" stop-color="#f7f7ff"/>
+      <stop offset="1" stop-color="#9caaff"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="blur"/>
+      <feOffset dy="9" result="offset"/>
+      <feColorMatrix in="offset" type="matrix" values="0 0 0 0 0.01  0 0 0 0 0.02  0 0 0 0 0.10  0 0 0 .72 0" result="shade"/>
+      <feMerge><feMergeNode in="shade"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <ellipse cx="512" cy="540" rx="310" ry="300" fill="#182b8a" opacity=".16" filter="url(#glow)"/>
+
+  <g filter="url(#shadow)" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Wi-Fi signal -->
+    <g fill="none" stroke="url(#silver)" stroke-width="27">
+      <path d="M383 230 Q512 122 641 230"/>
+      <path d="M420 274 Q512 199 604 274"/>
+      <path d="M454 315 Q512 268 570 315"/>
+    </g>
+    <circle cx="512" cy="357" r="24" fill="url(#silver)"/>
+
+    <!-- H uprights -->
+    <path d="M298 252 L383 309 Q406 326 406 359 L406 746 L298 805 Z" fill="url(#silver2)" stroke="#f4f5ff" stroke-width="2"/>
+    <path d="M726 252 L641 309 Q618 326 618 359 L618 746 L726 805 Z" fill="url(#silver2)" stroke="#f4f5ff" stroke-width="2"/>
+
+    <!-- Sweeping orbit/data ribbon -->
+    <path d="M291 574 C360 516 428 467 492 444 C574 414 645 435 690 489 C730 537 744 596 725 652 C708 701 671 737 625 760 C711 710 753 649 752 589 C751 519 711 460 649 432 C590 405 529 415 468 442 C397 474 338 516 291 574 Z"
+          fill="url(#orbit)" opacity=".98"/>
+    <path d="M292 574 C368 509 438 460 502 442 C575 422 634 442 675 488 C709 526 726 569 724 610 C716 560 690 517 652 491 C607 461 558 458 503 478 C432 503 360 556 292 620 Z"
+          fill="url(#silver)" stroke="#f7f8ff" stroke-width="2"/>
+
+    <!-- D-like outer curve, integrated with H -->
+    <path d="M533 680 L533 805 C630 785 701 730 728 662 C754 596 741 523 697 474 C663 436 618 418 570 421 C636 428 679 465 700 514 C722 566 710 627 676 671 C643 714 592 739 533 750 Z"
+          fill="url(#silver2)" stroke="#f4f5ff" stroke-width="2"/>
+
+    <!-- Orbit sweep behind/around the monogram -->
+    <path d="M288 572 C236 610 204 649 202 683 C199 719 240 741 294 736 C360 731 426 703 482 675 C405 718 337 756 274 757 C218 758 180 736 181 700 C182 656 222 610 288 572 Z"
+          fill="url(#orbit)" opacity=".95"/>
+    <path d="M728 515 C788 481 824 445 817 417 C811 391 776 379 727 383 C780 378 828 388 840 416 C854 448 809 494 728 548 Z"
+          fill="url(#orbit)" opacity=".95"/>
+
+    <!-- Mobile data bars -->
+    <path d="M536 625 Q536 619 542 615 L553 607 Q562 603 562 613 L562 688 Q562 694 556 694 L542 694 Q536 694 536 688 Z" fill="url(#bar)" stroke="#dfe7ff" stroke-width="2"/>
+    <path d="M572 596 Q572 590 578 586 L589 578 Q598 574 598 584 L598 688 Q598 694 592 694 L578 694 Q572 694 572 688 Z" fill="url(#bar)" stroke="#dfe7ff" stroke-width="2"/>
+    <path d="M608 558 Q608 552 614 548 L625 540 Q634 536 634 546 L634 688 Q634 694 628 694 L614 694 Q608 694 608 688 Z" fill="url(#silver)" stroke="#f4f5ff" stroke-width="2"/>
+  </g>
+</svg>
+
+</div>
+<script>
+  const p = new URLSearchParams(location.search);
+  const w = document.getElementById('wrap');
+  if (p.get('round') === '1') w.classList.add('round');
+  if (p.get('inset') === '1') w.classList.add('inset');
+</script>
+</body>
+</html>

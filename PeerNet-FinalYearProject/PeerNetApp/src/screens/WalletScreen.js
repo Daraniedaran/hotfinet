@@ -35,12 +35,10 @@ const WalletScreen = ({ navigation }) => {
   const [profile, setProfile] = useState(null);
   const [txList, setTxList] = useState([]);
   const [loadingTx, setLoadingTx] = useState(true);
-  const [uid, setUid] = useState(null);
 
   useEffect(() => {
     const user = getAuth().currentUser;
     if (!user) return;
-    setUid(user.uid);
 
     const unsub = listenUserProfile(user.uid, setProfile);
 
@@ -89,7 +87,7 @@ const WalletScreen = ({ navigation }) => {
                 <Text style={styles.backBtnText}>← Back</Text>
               </TouchableOpacity>
               <Text style={styles.headerTitle}>My Wallet</Text>
-              <View style={{ width: 60 }} />
+              <View style={styles.headerSpacer} />
             </View>
 
             {/* Balance Card */}
@@ -132,7 +130,7 @@ const WalletScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
 
-            {loadingTx && <ActivityIndicator color={COLORS.primary} style={{ marginVertical: 20 }} />}
+            {loadingTx && <ActivityIndicator color={COLORS.primary} style={styles.txLoading} />}
             {!loadingTx && txList.length === 0 && (
               <Text style={styles.emptyText}>No transactions yet</Text>
             )}
@@ -153,6 +151,8 @@ const styles = StyleSheet.create({
   backBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 10 },
   backBtnText: { color: COLORS.primary, fontWeight: '800' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  headerSpacer: { width: 60 },
+  txLoading: { marginVertical: 20 },
   balCard: { borderRadius: 20, padding: 22, marginBottom: 24 },
   balLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6 },
   balRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },

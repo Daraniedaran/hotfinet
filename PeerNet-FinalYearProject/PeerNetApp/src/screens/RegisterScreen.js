@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { registerUser } from '../services/AuthService';
@@ -49,14 +50,14 @@ const RegisterScreen = ({ navigation }) => {
   return (
     <LinearGradient colors={['#0c1222ff', '#082161ff']} style={styles.gradient}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.flex1}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           {/* Logo */}
           <View style={styles.logoArea}>
             <View style={styles.iconCircle}>
-              <Text style={styles.icon}>📡</Text>
+              <Image source={require('../../assets/logo-round.png')} style={styles.logo} />
             </View>
             <Text style={styles.title}>HotFiNet</Text>
             <Text style={styles.subtitle}>Create your account</Text>
@@ -113,7 +114,7 @@ const RegisterScreen = ({ navigation }) => {
             />
 
             {loading ? (
-              <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 20 }} />
+              <ActivityIndicator size="large" color={COLORS.primary} style={styles.loadingSpinner} />
             ) : (
               <TouchableOpacity onPress={handleRegister} style={styles.buttonWrapper}>
                 <LinearGradient colors={['#42A5F5', '#1976D2']} style={styles.button}>
@@ -142,6 +143,8 @@ export default RegisterScreen;
 
 const styles = StyleSheet.create({
   gradient: { flex: 1 },
+  flex1: { flex: 1 },
+  loadingSpinner: { marginTop: 20 },
   container: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 60, paddingBottom: 40 },
   logoArea: { alignItems: 'center', marginBottom: 20 },
   iconCircle: {
@@ -155,7 +158,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  icon: { fontSize: 32, },
+  logo: { width: 56, height: 56, borderRadius: 28 },
   title: { fontSize: 34, fontWeight: '900', color: '#fff', letterSpacing: 1.5 },
   subtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 4 },
   bonusBanner: {

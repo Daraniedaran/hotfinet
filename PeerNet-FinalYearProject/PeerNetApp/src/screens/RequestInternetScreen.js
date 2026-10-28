@@ -22,7 +22,6 @@ import { calculateCoinsForMB } from '../services/walletService';
 import { COLORS } from '../theme/colors';
 
 const { width } = Dimensions.get('window');
-const RADAR_CENTER = width / 2;
 
 const RadarAnimation = () => {
   const anim = useRef(new Animated.Value(0)).current;
@@ -36,7 +35,7 @@ const RadarAnimation = () => {
         useNativeDriver: true,
       })
     ).start();
-  }, []);
+  }, [anim]);
 
   const s1 = anim.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] });
   const o1 = anim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.8, 0, 0] });
@@ -65,13 +64,13 @@ const RadarAnimation = () => {
 const RequestInternetScreen = ({ navigation }) => {
   const [mb, setMb] = useState('200');
   const [providers, setProviders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(null);
   const [userCoins, setUserCoins] = useState(0);
   const [userName, setUserName] = useState('Me');
   const [uid, setUid] = useState(null);
 
-  const coinsNeeded = calculateCoinsForMB(parseInt(mb) || 0);
+  const coinsNeeded = calculateCoinsForMB(parseInt(mb, 10) || 0);
 
   useEffect(() => {
     const user = getAuth().currentUser;
@@ -94,7 +93,7 @@ const RequestInternetScreen = ({ navigation }) => {
   }, []);
 
   const handleRequest = async (provider) => {
-    const mbVal = parseInt(mb);
+    const mbVal = parseInt(mb, 10);
     if (!mbVal || mbVal < 50) {
       Alert.alert('Invalid', 'Enter at least 50 MB.');
       return;
@@ -162,7 +161,7 @@ const RequestInternetScreen = ({ navigation }) => {
           <Text style={styles.backBtnText}>←</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Select to Connect</Text>
-        <View style={{ width: 40 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       <Text style={styles.radarSubTitle}>Searching for nearby devices...</Text>
@@ -242,10 +241,10 @@ const RequestInternetScreen = ({ navigation }) => {
 
         {/* Cost Preview */}
         <View style={styles.costPreview}>
-          <Text style={styles.costText}>Estimated Cost: <Text style={{ fontWeight: '900', color: COLORS.primary }}>🪙 {coinsNeeded}</Text></Text>
+          <Text style={styles.costText}>Estimated Cost: <Text style={styles.costValue}>🪙 {coinsNeeded}</Text></Text>
           {userCoins < coinsNeeded && (
-            <Text style={{ color: COLORS.error, fontSize: 12, marginTop: 4, textAlign: 'center' }}>
-              ⚠️ Not enough coins. <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('BuyCoins')}>Get more</Text>
+            <Text style={styles.insufficientText}>
+              ⚠️ Not enough coins. <Text style={styles.linkText} onPress={() => navigation.navigate('BuyCoins')}>Get more</Text>
             </Text>
           )}
         </View>
@@ -263,6 +262,7 @@ const styles = StyleSheet.create({
   backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 20 },
   backBtnText: { color: '#fff', fontSize: 20, fontWeight: '800' },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  headerSpacer: { width: 40 },
   radarSubTitle: { color: 'rgba(255,255,255,0.8)', textAlign: 'center', marginTop: 10, fontSize: 14, },
 
   // Radar UI
@@ -298,6 +298,9 @@ const styles = StyleSheet.create({
 
   costPreview: { alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.04)', paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)' },
   costText: { color: COLORS.textMuted, fontSize: 14, fontWeight: '600' },
+  costValue: { fontWeight: '900', color: COLORS.primary },
+  insufficientText: { color: COLORS.error, fontSize: 12, marginTop: 4, textAlign: 'center' },
+  linkText: { textDecorationLine: 'underline' },
 
   qrFab: { position: 'absolute', bottom: 330, alignSelf: 'center', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)', zIndex: 10 },
   qrFabText: { color: '#fff', fontSize: 13, fontWeight: '800' },

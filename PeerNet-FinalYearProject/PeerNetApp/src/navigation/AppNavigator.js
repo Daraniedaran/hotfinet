@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Text, Animated } from 'react-native';
+import { Text, Animated, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
@@ -35,15 +35,25 @@ const LoadingScreen = () => {
         Animated.timing(pulse, { toValue: 1.0, duration: 900, useNativeDriver: true }),
       ])
     ).start();
-  }, []);
+  }, [pulse]);
   return (
-    <LinearGradient colors={['#050505', '#11111A', '#050505']} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Animated.Text style={{ fontSize: 56, transform: [{ scale: pulse }] }}>📡</Animated.Text>
-      <Text style={{ color: '#fff', fontSize: 36, fontWeight: '900', letterSpacing: 2, marginTop: 20 }}>HotFiNet</Text>
-      <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '500', marginTop: 8 }}>Share Internet. Earn Coins.</Text>
+    <LinearGradient colors={['#050505', '#11111A', '#050505']} style={loadingStyles.container}>
+      <Animated.Image
+        source={require('../../assets/logo-round.png')}
+        style={[loadingStyles.icon, { transform: [{ scale: pulse }] }]}
+      />
+      <Text style={loadingStyles.title}>HotFiNet</Text>
+      <Text style={loadingStyles.tagline}>Share Internet. Earn Coins.</Text>
     </LinearGradient>
   );
 };
+
+const loadingStyles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  icon: { width: 128, height: 128 },
+  title: { color: '#fff', fontSize: 36, fontWeight: '900', letterSpacing: 2, marginTop: 20 },
+  tagline: { color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: '500', marginTop: 8 },
+});
 
 const AppNavigator = () => {
   const [initializing, setInitializing] = useState(true);
