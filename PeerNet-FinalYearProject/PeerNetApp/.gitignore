@@ -75,3 +75,11 @@ run,txt
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Firebase credentials and local secrets
+google-services.json
+GoogleService-Info.plist
+firebaseConfig.js
+.env
+.env.*
+!.env.example

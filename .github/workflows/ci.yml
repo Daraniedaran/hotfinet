@@ -39,6 +39,15 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+      - name: Restore google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          fi
+
       - name: Android debug build (optional)
+        if: ${{ hashFiles('PeerNet-FinalYearProject/PeerNetApp/android/app/google-services.json') != '' }}
         run: ./gradlew assembleDebug
         continue-on-error: true
